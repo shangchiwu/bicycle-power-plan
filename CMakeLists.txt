@@ -28,11 +28,13 @@ list(APPEND SOURCE_LIST
         src/Encoding.cpp
         src/EvolutionalStrategy.cpp
         src/BicyclePlan.cpp
+        src/Util.cpp
 )
 list(APPEND HEADER_LIST
         include/Encoding.h
         include/EvolutionalStrategy.h
         include/BicyclePlan.h
+        include/Util.H
 )
 
 add_executable(BicyclePowerPlan src/main.cpp ${HEADER_LIST} ${SOURCE_LIST})

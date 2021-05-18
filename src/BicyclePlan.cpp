@@ -6,6 +6,10 @@
 
 using namespace std;
 
-float evaluate(shared_ptr<Encoding> offspring) {
+BicyclePlan::BicyclePlan(const std::string &filepath) {
+
+}
+
+float BicyclePlan::evaluate(shared_ptr<Encoding> offspring) {
 
 }

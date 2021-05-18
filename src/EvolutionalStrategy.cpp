@@ -3,7 +3,7 @@
 
 using namespace std;
 
-shared_ptr<Encoding> evolutionalStrategy(float mu, float rho) {
+shared_ptr<Encoding> evolutionalStrategy(float mu, float rho, shared_ptr<BicyclePlan> bicyclePlan) {
     const int ITERATION = 10000;
     const int OFFSPRING_PER_ITERATION = 32;
 
@@ -24,7 +24,7 @@ shared_ptr<Encoding> evolutionalStrategy(float mu, float rho) {
             // TODO Mutation
             mutation(newOffspring);
             // TODO Calculate F function of this encoding
-            evaluate(newOffspring);
+            bicyclePlan->evaluate(newOffspring);
             // TODO Add to offspring population
             offspringPopulations.push_back(newOffspring);
         }
@@ -35,7 +35,7 @@ shared_ptr<Encoding> evolutionalStrategy(float mu, float rho) {
 }
 
 void initializePopulation(vector <shared_ptr<Encoding >> &parentPopulations) {
-
+    // TODO Project initial encoding to feasible encoding
 }
 
 shared_ptr<Encoding> generateOffspringFromPopulation(const vector <shared_ptr<Encoding >> &parentPopulations) {

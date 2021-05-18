@@ -5,8 +5,8 @@
 // Encoding should store
 // 1. real-value encoding
 // 2. calculated F value of current real-value encoding
-// 3. self adaption recombination parameter
-// 4. self adaption mutation parameter
+// 3. self-adaptive recombination parameter
+// 4. self-adaptive mutation parameter
 // (They are encoding-wise, which means every encoding should have its own self-adaption parameter
 // to self-adapt it on two operation)
 
@@ -14,12 +14,13 @@
 #define BICYCLEPOWERPLAN_ENCODING_H
 
 #include <vector>
+#include "Util.h"
 
 class Encoding {
 public:
-    Encoding(int N, bool randomShuffle=true) {
+    Encoding(int N, bool randomShuffle = true);
 
-    }
+    Encoding &operator=(const Encoding &encoding);
 
     std::vector<float> m_powerList;
     float m_precalculateObjective;

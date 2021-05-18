@@ -9,6 +9,15 @@
 
 class Encoding;
 
-float evaluate(std::shared_ptr<Encoding> offspring);
+class BicyclePlan {
+public:
+    BicyclePlan(const std::string &filepath);
+
+    float evaluate(std::shared_ptr<Encoding> offspring);
+
+private:
+
+};
+
 
 #endif //BICYCLEPOWERPLAN_BICYCLEPLAN_H
