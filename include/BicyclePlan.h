@@ -11,12 +11,15 @@ class Encoding;
 
 class BicyclePlan {
 public:
-    BicyclePlan(const std::string &filepath);
+
+    static bool initialize(const std::string &filepath);
+
+    static std::shared_ptr<BicyclePlan> getInstance();
 
     float evaluate(std::shared_ptr<Encoding> offspring);
 
 private:
-
+    static std::shared_ptr<BicyclePlan> instance;
 };
 
 

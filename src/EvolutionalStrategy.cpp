@@ -1,59 +1,103 @@
+#include <random>
+#include <algorithm>
 #include "EvolutionalStrategy.h"
 #include "BicyclePlan.h"
 
 using namespace std;
 
-shared_ptr<Encoding> evolutionalStrategy(float mu, float rho, shared_ptr<BicyclePlan> bicyclePlan) {
+Person evolutionStrategy(int parentPopulationSize, int selectParentSize, int offspringPopulationSize) {
+    // Reference from page 6 of http://www.cmap.polytechnique.fr/~nikolaus.hansen/es-overview-2015.pdf
+    // mu is parentPopulationSize
+    // rho is selectParentSize
+    // lambda is offspringPopulationSize
     const int ITERATION = 10000;
-    const int OFFSPRING_PER_ITERATION = 32;
 
-    vector <shared_ptr<Encoding >> parentPopulations;
-    shared_ptr<Encoding> bestEncoding;
-    initializePopulation(parentPopulations);
+    Population parentPopulations;
+    Person bestPerson;
+    initializePopulation(parentPopulations, parentPopulationSize);
+    bestPerson = getBestPersonFromPopulation(parentPopulations);
     for (int i = 0; i < ITERATION; ++i) {
-        vector <shared_ptr<Encoding >> offspringPopulations;
-        for (int j = 0; j < OFFSPRING_PER_ITERATION; ++j) {
-            // TODO Generate offspring from any parent
-            shared_ptr <Encoding> newOffspring = generateOffspringFromPopulation(parentPopulations);
-            // TODO Recombination self-adaption
-            updateSelfAdaptionRecombination(newOffspring);
-            // TODO Recombination
-            recombination(newOffspring);
-            // TODO Mutation self-adaption
+        Population offspringPopulations;
+        for (int j = 0; j < offspringPopulationSize; ++j) {
+            Person newOffspring = generateOffspringFromPopulation(parentPopulations, selectParentSize);
             updateSelfAdaptionMutation(newOffspring);
-            // TODO Mutation
             mutation(newOffspring);
-            // TODO Calculate F function of this encoding
-            bicyclePlan->evaluate(newOffspring);
-            // TODO Add to offspring population
             offspringPopulations.push_back(newOffspring);
         }
-        // TODO Select new populations from both parent population and offspring population
-        // TODO Record best population
+        parentPopulations = survivorSelection(parentPopulations, offspringPopulations);
+        bestPerson = getBestPersonFromPopulation(parentPopulations);
     }
-    return bestEncoding;
+    return bestPerson;
 }
 
-void initializePopulation(vector <shared_ptr<Encoding >> &parentPopulations) {
+Person getBestPersonFromPopulation(Population &population) {
+    float bestQuality = 1e9;
+    Person bestPerson;
+    // FIXME I assume the better quality have less value
+    for (auto &person: population) {
+        float quality = person->getPrecalculateObjective();
+        if (quality < bestQuality) {
+            bestQuality = quality;
+            bestPerson = person;
+        }
+    }
+    return bestPerson;
+}
+
+void initializePopulation(Population &parentPopulations, int parentPopulationSize) {
     // TODO Project initial encoding to feasible encoding
 }
 
-shared_ptr<Encoding> generateOffspringFromPopulation(const vector <shared_ptr<Encoding >> &parentPopulations) {
-
+Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize) {
+    // In page 7 "Recombination Operators" of http://www.cmap.polytechnique.fr/~nikolaus.hansen/es-overview-2015.pdf
+    // Use intermediate recombination
+    Population selectedParentPopulation;
+    for(int i = 0; i < selectParentSize; ++i) {
+        // FIXME currently use random select parent
+        selectedParentPopulation.push_back(parentPopulations[Util::generateRandomParentIdx(parentPopulations)]);
+    }
+    int roadAmount = parentPopulations[0]->m_n;
+    Person offspring = make_shared<Encoding>(roadAmount);
+    offspring->averageOverAllParent(selectedParentPopulation);
+    // TODO update offspring's recombination self-adaption parameter
+    return offspring;
 }
 
-void updateSelfAdaptionRecombination(shared_ptr<Encoding> offspring) {
+void updateSelfAdaptionMutation(Person &offspring) {
+    // first order learning rate
+    float tau = 1. / sqrt(2 * offspring->m_n);
+    float EPSILON = 0.3f;
 
+    std::random_device randomDevice;
+    std::mt19937 generator(randomDevice());
+    normal_distribution<float> normalDistribution(0.0, 1.0);
+
+    offspring->m_selfAdaption = max(offspring->m_selfAdaption * exp(tau * normalDistribution(generator)), EPSILON);
 }
 
-void recombination(shared_ptr<Encoding> offspring) {
-
+void mutation(Person &offspring) {
+    std::random_device randomDevice;
+    std::mt19937 generator(randomDevice());
+    normal_distribution<float> normalDistribution(0.0, 1.0);
+    for (auto &gene: offspring->m_powerList) {
+        gene += offspring->m_selfAdaption * normalDistribution(generator);
+    }
 }
 
-void updateSelfAdaptionMutation(shared_ptr<Encoding> offspring) {
-
-}
-
-void mutation(shared_ptr<Encoding> offspring) {
-
+Population survivorSelection(const Population &parentPopulations, const Population &offspringPopulations) {
+    // (mu, lambda) selection
+    // TODO should assert parent population and offspring population
+    Population newPopulation;
+    std::vector<PersonQuality> personQualityList;
+    for (int i = 0; i < offspringPopulations.size(); ++i) {
+        PersonQuality personQuality = PersonQuality(offspringPopulations[i]->getPrecalculateObjective(),
+                                                    offspringPopulations[i]);
+        personQualityList.push_back(personQuality);
+    }
+    // sort person list descending
+    std::sort(personQualityList.begin(), personQualityList.end(), std::greater<>());
+    for (int i = 0; i < parentPopulations.size(); ++i) {
+        newPopulation.push_back(personQualityList[i].second);
+    }
+    return newPopulation;
 }

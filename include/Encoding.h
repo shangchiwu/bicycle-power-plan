@@ -14,7 +14,12 @@
 #define BICYCLEPOWERPLAN_ENCODING_H
 
 #include <vector>
-#include "Util.h"
+#include "util.h"
+#include "EvolutionalStrategy.h"
+#include <iostream>
+#include <memory>
+
+typedef std::shared_ptr<Encoding > Person;
 
 class Encoding {
 public:
@@ -22,13 +27,28 @@ public:
 
     Encoding &operator=(const Encoding &encoding);
 
+    friend std::ostream &operator<<(std::ostream &os, const Encoding &encoding);
+
+    Encoding &swapElement(int aPos, int bPos);
+
+    Encoding &shiftElement(int shiftAmount);
+
+    float &operator[](int idx);
+
+    float operator[](int idx) const;
+
+    float getPrecalculateObjective();
+
+    void averageOverAllParent(const std::vector<Person> &parentPopulation);
+
+    int m_n;
     std::vector<float> m_powerList;
     float m_precalculateObjective;
-    float m_selfAdaptRecombination;
-    float m_selfAdaptMutation;
+    float m_selfAdaption;
 
 private:
     bool m_dirtyFlag;
 };
+
 
 #endif //BICYCLEPOWERPLAN_ENCODING_H
