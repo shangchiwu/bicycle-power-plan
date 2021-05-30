@@ -52,14 +52,13 @@ Person generateOffspringFromPopulation(const Population &parentPopulations, int 
     // In page 7 "Recombination Operators" of http://www.cmap.polytechnique.fr/~nikolaus.hansen/es-overview-2015.pdf
     // Use intermediate recombination
     Population selectedParentPopulation;
-    for(int i = 0; i < selectParentSize; ++i) {
+    for (int i = 0; i < selectParentSize; ++i) {
         // FIXME currently use random select parent
         selectedParentPopulation.push_back(parentPopulations[Util::generateRandomParentIdx(parentPopulations)]);
     }
     int roadAmount = parentPopulations[0]->m_n;
     Person offspring = make_shared<Encoding>(roadAmount);
     offspring->averageOverAllParent(selectedParentPopulation);
-    // TODO update offspring's recombination self-adaption parameter
     return offspring;
 }
 
@@ -89,9 +88,9 @@ Population survivorSelection(const Population &parentPopulations, const Populati
     // TODO should assert parent population and offspring population
     Population newPopulation;
     std::vector<PersonQuality> personQualityList;
-    for (int i = 0; i < offspringPopulations.size(); ++i) {
-        PersonQuality personQuality = PersonQuality(offspringPopulations[i]->getPrecalculateObjective(),
-                                                    offspringPopulations[i]);
+    for (const auto &offspringPopulation : offspringPopulations) {
+        PersonQuality personQuality = PersonQuality(offspringPopulation->getPrecalculateObjective(),
+                                                    offspringPopulation);
         personQualityList.push_back(personQuality);
     }
     // sort person list descending
