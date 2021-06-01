@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bicycle Calculator</title>
+  <style>
+body {
+  font: 1em/1.2 sans-serif;
+}
+
+.data-block {
+  margin-top: .5em;
+  margin-bottom: .5em;
+  border-left: .3em solid;
+  padding: .2em;
+}
+
+.data-block>header {
+  margin: .2em;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.data-row {
+  margin: .5em .2em;
+}
+
+.data-row>* {
+  vertical-align: middle;
+}
+
+.data-row .label {
+  display: inline-block;
+  width: 9em;
+}
+
+.data-row .param-direction {
+  display: inline-block;
+  width: 1.5em;
+  text-align: right;
+}
+
+.data-row .input {
+  display: inline-block;
+  width: 5em;
+  margin: auto .5em;
+}
+
+.data-row .unit {
+  display: inline-block;
+  width: 5em;
+}
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Bicycle Calculator</h1>
+    <p>This is the simplified version of <a href="http://bikecalculator.com/" alt="Bike Calculator">Bike Calculator</a>.</p>
+  </header>
+  <hr>
+
+  <div id="data-field">
+
+    <div class="data-block" style="border-color: red;">
+      <header>Result</header>
+      <div class="data-row">
+        <input type="submit" id="button-power-to-velocity" value="Power -> Velocity">
+        <input type="submit" id="button-velocity-to-power" value="Velocity -> Power">
+        <input type="reset" id="button-reset" value="Reset">
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-power">Power</label>
+        <span class="param-direction">&lt;&gt;</span>
+        <input type="number" id="input-power" min="0" step="1" class="input">
+        <span class="unit">W</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-velocity">Velocity</label>
+        <span class="param-direction">&lt;&gt;</span>
+        <input type="number" id="input-velocity" min="0" step="0.1" class="input">
+        <span class="unit">km/h</span>
+      </div>
+    </div>
+
+    <div class="data-block" style="border-color: #33d;">
+      <header>Rider Info</header>
+      <div class="data-row">
+        <label class="label" for="input-rider-weight">Rider Weight</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-rider-weight" min="0" step="0.1" class="input">
+        <span class="unit">kg</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-bike-weight">Bike Weight</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-bike-weight" min="0" step="0.1" class="input">
+        <span class="unit">kg</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-rolling-resistance-coef">Rolling Resistance Coef.</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-rolling-resistance-coef" min="0" max="1" step="0.005" class="input">
+        <span class="unit"></span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-frontal-area-coef">Frontal Area Coef.</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-frontal-area-coef" min="0" max="1" step="0.005" class="input">
+        <span class="unit"></span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-transmission-efficiency">Transmission Efficiency</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-transmission-efficiency" min="0" max="1" step="0.01" class="input">
+        <span class="unit"></span>
+      </div>
+    </div>
+
+    <div class="data-block" style="border-color: #393;">
+      <header>Road Info</header>
+      <div class="data-row">
+        <label class="label" for="input-grade">Grade</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-grade" step="0.1" class="input">
+        <span class="unit">%</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-head-wind">Head Wind</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-head-wind" step="0.1" class="input">
+        <span class="unit">km/h</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-distance">Distance</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-distance" min="0" step="0.1" class="input">
+        <span class="unit">km</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-temperature">temperature</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-temperature" min="-273.15" step="0.1" class="input">
+        <span class="unit">°C</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-elevation">Elevation</label>
+        <span class="param-direction">&gt;</span>
+        <input type="number" id="input-elevation" step="1" class="input">
+        <span class="unit">m</span>
+      </div>
+    </div>
+
+    <div class="data-block" style="border-color: #933;">
+      <header>Other</header>
+      <div class="data-row">
+        <label class="label" for="input-time">Time</label>
+        <span class="param-direction">&lt;</span>
+        <input type="number" id="input-time" min="0" step="1" class="input">
+        <span class="unit">minutes</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-consumed-energy">Consumed Energy</label>
+        <span class="param-direction">&lt;</span>
+        <input type="number" id="input-consumed-energy" min="0" step="1" class="input">
+        <span class="unit">calories</span>
+      </div>
+      <div class="data-row">
+        <label class="label" for="input-weight-loss">Weight Loss</label>
+        <span class="param-direction">&lt;</span>
+        <input type="number" id="input-weight-loss" min="0" step="1" class="input">
+        <span class="unit">kg</span>
+      </div>
+    </div>
+
+  </div>
+
+  <p>Hint: Use Arrow-Up / Arrow-Down key or mouse wheel to quickly adjust the value.</p>
+
+  <script>
+
+const items = {
+  power:                  { elemId: '#input-power',                   defaultValue: 150   },
+  velocity:               { elemId: '#input-velocity',                defaultValue: 28.44 },
+  riderWeight:            { elemId: '#input-rider-weight',            defaultValue: 70    },
+  bikeWeight:             { elemId: '#input-bike-weight',             defaultValue: 9     },
+  rollingResistanceCoef:  { elemId: '#input-rolling-resistance-coef', defaultValue: 0.005 },
+  frontalAreaCoef:        { elemId: '#input-frontal-area-coef',       defaultValue: 0.388 },
+  transmissionEfficiency: { elemId: '#input-transmission-efficiency', defaultValue: 0.95  },
+  grade:                  { elemId: '#input-grade',                   defaultValue: 0     },
+  headWind:               { elemId: '#input-head-wind',               defaultValue: 0     },
+  distance:               { elemId: '#input-distance',                defaultValue: 30    },
+  temperature:            { elemId: '#input-temperature',             defaultValue: 25    },
+  elevation:              { elemId: '#input-elevation',               defaultValue: 100   },
+  time:                   { elemId: '#input-time',                    defaultValue: 63.30 },
+  consumedEnergy:         { elemId: '#input-consumed-energy',         defaultValue: 544   },
+  weightLoss:             { elemId: '#input-weight-loss',             defaultValue: 0.07  }
+};
+
+for (const key in items) {
+  const elem = document.querySelector(items[key].elemId);
+  items[key].elem = elem;
+}
+
+const reset = () => {
+  for (const key in items)
+    items[key].elem.value = items[key].defaultValue;
+}
+
+reset();
+
+const inputValue = () => {
+  const params = {};
+  for (const key in items) {
+    params[key] = parseFloat(items[key].elem.value);
+    if (Number.isNaN(params[key]))
+      params[key] = 0;
+  }
+  params.distance *= 1000;
+  params.grade /= 100;
+  params.headWind /= 3.6;
+  params.velocity /= 3.6;
+  params.time *= 60;
+  params.consumedEnergy *= 4.18;
+  return params;
+}
+
+const outputValue = params => {
+  params.distance /= 1000;
+  params.grade *= 100;
+  params.headWind *= 3.6;
+  params.velocity *= 3.6;
+  params.time /= 60;
+  params.consumedEnergy /= 4.18;
+  for (const key in items) {
+    if (Number.isNaN(params[key]))
+      items[key].elem.value = 0;
+    else
+      items[key].elem.value = Math.round(params[key] * 1e3) / 1e3;
+  }
+}
+
+const compute = target => {
+  const params = inputValue();
+
+  // common part
+  const airDensity = (1.293 - 0.00426 * params.temperature) * Math.exp(-params.elevation / 7000);
+  const airResistanceCoef = 0.5 * params.frontalAreaCoef * airDensity;
+  const totalWeight = 9.8 * (params.riderWeight + params.bikeWeight);
+  const totalResistance = totalWeight * (params.grade + params.rollingResistanceCoef);
+
+  // compute velocity from power
+  if (target === 'velocity') {
+    params.velocity = newtonMethod(airResistanceCoef, params.headWind, totalResistance, params.transmissionEfficiency, params.power);
+  }
+
+  // compute power from velocity
+  if (target === 'power') {
+    const totalWindSpeed = params.velocity + params.headWind;
+    const airCoef = (totalWindSpeed > 0) ? airResistanceCoef : -airResistanceCoef;
+    params.power = params.velocity * (totalResistance + totalWindSpeed * totalWindSpeed * airCoef) / params.transmissionEfficiency;
+  }
+
+  // compute time
+  if (params.velocity > 0)
+    params.time = params.distance / params.velocity;
+  else
+    params.time = 0;
+  
+  // compute other params
+  params.consumedEnergy = params.time * params.power / 0.25 / 1000;
+  params.weightLoss = params.consumedEnergy / 32318;
+
+  outputValue(params);
+};
+
+const newtonMethod = (airResistanceCoef, headWind, totalResistance, transmissionEfficiency, power) => {
+  const maxIterations = 10;
+  const tolerance = 0.05;
+  let velocity = 20; // initial guess
+
+  for (let i = 0; i < maxIterations; ++i) {
+    const totalWindSpeed = velocity + headWind;
+    const airCoef = (totalWindSpeed > 0) ? airResistanceCoef : -airResistanceCoef;
+    const f = velocity * (airCoef * totalWindSpeed * totalWindSpeed + totalResistance) - transmissionEfficiency * power;
+    const fp = airCoef * (3 * velocity + headWind) * totalWindSpeed + totalResistance;
+    const newVelocity = velocity - f / fp;
+    if (Math.abs(newVelocity - velocity) < tolerance)
+      return newVelocity; // converge
+    velocity = newVelocity;
+  }
+
+  return 0; // faild to converge
+};
+
+// add event listener
+
+document.querySelector('#button-power-to-velocity').addEventListener('click', () => compute('velocity'));
+document.querySelector('#button-velocity-to-power').addEventListener('click', () => compute('power'));
+document.querySelector('#button-reset').addEventListener('click', reset);
+
+for (const key in items) {
+  const target = (key === 'velocity') ? 'power' : 'velocity';
+  // update on input
+  items[key].elem.addEventListener('input', () => compute(target));
+  items[key].elem.addEventListener('change', () => compute(target));
+  // adjust by mouse wheel
+  items[key].elem.addEventListener('wheel', e => {
+    items[key].elem.value = parseFloat(items[key].elem.value) - Math.sign(e.deltaY) * parseFloat(items[key].elem.step);
+    items[key].elem.dispatchEvent(new InputEvent('change', {bubble: true, cancelable: true}));
+  });
+}
+
+  </script>
+</body>
+</html>
