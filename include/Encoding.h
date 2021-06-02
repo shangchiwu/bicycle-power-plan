@@ -19,9 +19,9 @@
 #include <iostream>
 #include <memory>
 
-typedef std::shared_ptr<Encoding > Person;
+typedef std::shared_ptr<Encoding> Person;
 
-class Encoding {
+class Encoding : public std::enable_shared_from_this<Encoding>{
 public:
     Encoding(int N, bool randomShuffle = true);
 

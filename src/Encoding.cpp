@@ -4,8 +4,8 @@
 
 using namespace std;
 
-Encoding::Encoding(int N, bool randomShuffle) {
-    m_powerList.reserve(N);
+Encoding::Encoding(int N, bool randomShuffle) : m_n(N) {
+    m_powerList.resize(N);
     if (randomShuffle) {
         for (int i = 0; i < N; ++i) {
             m_powerList[i] = Util::randomBetween0To1();
@@ -85,8 +85,8 @@ Encoding &Encoding::shiftElement(int shiftAmount) {
 
 float Encoding::getPrecalculateObjective() {
     if (m_dirtyFlag) {
-        const shared_ptr<BicyclePlan> bicyclePlan = BicyclePlan::getInstance();
-        m_precalculateObjective = bicyclePlan->evaluate(std::unique_ptr<Encoding>(this));
+        auto bicyclePlan = BicyclePlan::getInstance();
+        m_precalculateObjective = bicyclePlan->evaluate(shared_from_this());
         m_dirtyFlag = false;
     }
     return m_precalculateObjective;

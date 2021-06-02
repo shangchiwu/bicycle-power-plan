@@ -12,10 +12,13 @@ int main(int argc, char **argv) {
     if (!initializeResult) {
         cerr << "Bicycle plan initialize failed" << endl;
         exit(1);
+    } else {
+        cout << "Bicycle plan initialize success" << endl;
     }
 
     int parentPopulationSize = 64, selectParentSize = 4, offspringPopulationSize = 64;
     Person bestPerson = evolutionStrategy(parentPopulationSize, selectParentSize, offspringPopulationSize);
-
-    cout << "Best encoding: " << bestPerson << endl;
+    cout << "Self adaption value: " << bestPerson->m_selfAdaption << endl;
+    cout << "Calculate objective: " << bestPerson->m_precalculateObjective << endl;
+    cout << "Best encoding: " << *bestPerson << endl;
 }

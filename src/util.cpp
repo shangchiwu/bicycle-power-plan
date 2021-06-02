@@ -20,4 +20,8 @@ namespace Util {
         return idx;
     }
 
+    float clamp(float val, float ra, float rb) {
+        return val < ra?ra:val>rb?rb:val;
+    }
+
 }

@@ -46,6 +46,10 @@ Person getBestPersonFromPopulation(Population &population) {
 
 void initializePopulation(Population &parentPopulations, int parentPopulationSize) {
     // TODO Project initial encoding to feasible encoding
+    auto bicyclePlan = BicyclePlan::getInstance();
+    for(int i = 0;i < parentPopulationSize;++i) {
+        parentPopulations.push_back(make_shared<Encoding>(bicyclePlan->getSegmentSize()));
+    }
 }
 
 Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize) {
@@ -93,8 +97,8 @@ Population survivorSelection(const Population &parentPopulations, const Populati
                                                     offspringPopulation);
         personQualityList.push_back(personQuality);
     }
-    // sort person list descending
-    std::sort(personQualityList.begin(), personQualityList.end(), std::greater<>());
+    // assume lower is better
+    std::sort(personQualityList.begin(), personQualityList.end());
     for (int i = 0; i < parentPopulations.size(); ++i) {
         newPopulation.push_back(personQualityList[i].second);
     }
