@@ -4,12 +4,15 @@ from pathlib import Path
 import gpxpy
 import geopy.distance
 
+DEFAULT_TEMPERATURE = 25.0
+DEFAULT_WIND_SPEED = 0.0
+
 def main():
 
     # parse command line arguments
     
     if (len(sys.argv) != 3):
-        print("Usage: split_track.py <gpx> <num_segments>")
+        print(f'Usage: {Path(sys.argv[0]).name} <gpx> <num_segments>')
         exit(1)
     
     gpx_filepath = sys.argv[1]
@@ -82,7 +85,10 @@ def main():
                 'distance': round(current_distance, 3),
                 'totalClimb': round(total_climb, 3),
                 'totalDownhill': round(total_downhill, 3),
-                'elevationDiff': round(total_climb - total_downhill, 3)
+                'elevationDiff': round(total_climb - total_downhill, 3),
+                'elevation': current_segment[0]['point_a'].elevation,
+                'temperature': DEFAULT_TEMPERATURE,
+                'windSpeed': DEFAULT_WIND_SPEED
             })
             track_data['distance'] += current_distance
             current_segment = []
@@ -96,7 +102,9 @@ def main():
 
     # save track data
 
-    with open(f'{track_data["trackName"]}.json', 'w', encoding='utf-8') as f:
+    json_filepath = Path(gpx_filepath).with_name(f'{track_data["trackName"]}.json')
+
+    with open(json_filepath, 'w', encoding='utf-8') as f:
         json.dump(track_data, f, indent=2)
 
     # print statictics
