@@ -99,7 +99,7 @@ body {
         <label class="label" for="input-total-energy">Total Energy</label>
         <span class="param-direction">&gt;</span>
         <input type="number" id="input-total-energy" min="0" step="1" class="input">
-        <span class="unit">calories</span>
+        <span class="unit">kJ</span>
       </div>
       <div class="data-row">
         <label class="label" for="input-rider-weight">Rider Weight</label>
@@ -133,66 +133,8 @@ body {
       </div>
     </div>
 
-    <!-- <div class="data-block" style="border-color: #393;">
-      <header>Road Info</header>
-      <div class="data-row">
-        <label class="label" for="input-grade">Grade</label>
-        <span class="param-direction">&gt;</span>
-        <input type="number" id="input-grade" step="0.1" class="input">
-        <span class="unit">%</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-head-wind">Head Wind</label>
-        <span class="param-direction">&gt;</span>
-        <input type="number" id="input-head-wind" step="0.1" class="input">
-        <span class="unit">km/h</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-distance">Distance</label>
-        <span class="param-direction">&gt;</span>
-        <input type="number" id="input-distance" min="0" step="0.1" class="input">
-        <span class="unit">km</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-temperature">temperature</label>
-        <span class="param-direction">&gt;</span>
-        <input type="number" id="input-temperature" min="-273.15" step="0.1" class="input">
-        <span class="unit">°C</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-elevation">Elevation</label>
-        <span class="param-direction">&gt;</span>
-        <input type="number" id="input-elevation" step="1" class="input">
-        <span class="unit">m</span>
-      </div>
-    </div> -->
-
     <div class="data-block" style="border-color: red;">
       <header>Result</header>
-      <div class="data-row">
-        <!-- <label class="label" for="input-velocity">Velocity</label>
-        <span class="param-direction">&lt;</span>
-        <input type="number" id="input-velocity" min="0" step="0.1" class="input">
-        <span class="unit">km/h</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-time">Time</label>
-        <span class="param-direction">&lt;</span>
-        <input type="number" id="input-time" min="0" step="1" class="input">
-        <span class="unit">minutes</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-consumed-energy">Consumed Energy</label>
-        <span class="param-direction">&lt;</span>
-        <input type="number" id="input-consumed-energy" min="0" step="1" class="input">
-        <span class="unit">calories</span>
-      </div>
-      <div class="data-row">
-        <label class="label" for="input-weight-loss">Weight Loss</label>
-        <span class="param-direction">&lt;</span>
-        <input type="number" id="input-weight-loss" min="0" step="1" class="input">
-        <span class="unit">kg</span>
-      </div> -->
       <div class="data-row">
         <input type="submit" id="button-compute" value="Compute">
         <input type="reset" id="button-reset" value="Reset">
@@ -211,22 +153,13 @@ body {
   <script>
 
 const items = {
-  power:                  { elemId: '#input-power',                   defaultValue: 200   },
-  totalEnergy:            { elemId: '#input-total-energy',            defaultValue: 3000  },
+  power:                  { elemId: '#input-power',                   defaultValue: 150   },
+  totalEnergy:            { elemId: '#input-total-energy',            defaultValue: 12000 },
   riderWeight:            { elemId: '#input-rider-weight',            defaultValue: 60    },
   bikeWeight:             { elemId: '#input-bike-weight',             defaultValue: 10    },
   rollingResistanceCoef:  { elemId: '#input-rolling-resistance-coef', defaultValue: 0.005 },
   frontalAreaCoef:        { elemId: '#input-frontal-area-coef',       defaultValue: 0.388 },
   transmissionEfficiency: { elemId: '#input-transmission-efficiency', defaultValue: 0.95  },
-  // grade:                  { elemId: '#input-grade',                   defaultValue: 0     },
-  // headWind:               { elemId: '#input-head-wind',               defaultValue: 0     },
-  // distance:               { elemId: '#input-distance',                defaultValue: 30    },
-  // temperature:            { elemId: '#input-temperature',             defaultValue: 25    },
-  // elevation:              { elemId: '#input-elevation',               defaultValue: 100   },
-  // velocity:               { elemId: '#input-velocity',                defaultValue: 28.44 },
-  // time:                   { elemId: '#input-time',                    defaultValue: 63.30 },
-  // consumedEnergy:         { elemId: '#input-consumed-energy',         defaultValue: 544   },
-  // weightLoss:             { elemId: '#input-weight-loss',             defaultValue: 0.07  }
 };
 
 let trackData = null;
@@ -250,29 +183,7 @@ const inputValue = () => {
     if (Number.isNaN(params[key]))
       params[key] = 0;
   }
-  // params.distance *= 1000;
-  // params.grade /= 100;
-  // params.headWind /= 3.6;
-  // params.velocity /= 3.6;
-  // params.time *= 60;
-  // params.consumedEnergy *= 4.18;
-  params.totalEnergy *= 4.18;
   return params;
-};
-
-const outputValue = params => {
-  // params.distance /= 1000;
-  // params.grade *= 100;
-  // params.headWind *= 3.6;
-  // params.velocity *= 3.6;
-  // params.time /= 60;
-  params.consumedEnergy /= 4.18;
-  for (const key in items) {
-    if (Number.isNaN(params[key]))
-      items[key].elem.value = 0;
-    else
-      items[key].elem.value = Math.round(params[key] * 1e3) / 1e3;
-  }
 };
 
 // compute
@@ -337,8 +248,8 @@ const computeTrack = () => {
     const segment = trackData.segments[i];
 
     // make params
-    params.headWind = segment.windSpeed / 3.6;
-    params.distance = segment.distance * 1000;
+    params.headWind = segment.windSpeed;
+    params.distance = segment.distance;
     params.grade = segment.elevationDiff / params.distance;
     params.temperature = segment.temperature;
     params.elevation = segment.elevation;
@@ -369,23 +280,24 @@ const computeTrack = () => {
 const outputTable = segmentParams => {
   const tableElem = document.querySelector('#track-table');
   tableElem.innerHTML =
-    ['segmentId', 'distance', 'grade', 'velocity', 'leftEnergyRatio', 'power', 'time', 'consumedEnergy', 'leftEnergy', 'totalTime']
+    ['segmentId', 'distance', 'grade', 'windSpeed', 'velocity', 'leftEnergyRatio', 'power', 'time', 'consumedEnergy', 'leftEnergy', 'totalTime']
       .reduce((acc, cur) => `${acc}<th>${cur}</th>`, '');
   for (let i = 0; i < trackData.numSegments; ++i) {
     const segment = trackData.segments[i];
     const params = segmentParams[i];
     const trElem = document.createElement('tr');
     trElem.innerHTML =
-      `<td>${Math.round(segment.segmentId * 1e3, 3) / 1e3}</td>\n` +
-      `<td>${Math.round(params.distance * 1e3, 3) / 1e3}</td>\n` +
+      `<td>${segment.segmentId}</td>\n` +
+      `<td>${Math.round(params.distance)}</td>\n` +
       `<td>${Math.round(params.grade * 1e3, 3) / 1e3}</td>\n` +
+      `<td>${Math.round(segment.windSpeed * 1e3, 3) / 1e3}</td>\n` +
       `<td>${Math.round(params.velocity * 1e3, 3) / 1e3}</td>\n` +
       `<td>${Math.round(params.leftEnergyRatio * 1e3, 3) / 1e3}</td>\n` +
       `<td>${Math.round(params.power * 1e3, 3) / 1e3}</td>\n` +
-      `<td>${Math.round(params.time * 1e3, 3) / 1e3}</td>\n` +
+      `<td>${Math.round(params.time)}</td>\n` +
       `<td>${Math.round(params.consumedEnergy * 1e3, 3) / 1e3}</td>\n` +
       `<td>${Math.round(params.leftEnergy * 1e3, 3) / 1e3}</td>\n` +
-      `<td>${Math.round(params.totalTime * 1e3, 3) / 1e3}</td>\n`;
+      `<td>${Math.round(params.totalTime)}</td>\n`;
     tableElem.appendChild(trElem);
   }
 };
