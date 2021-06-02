@@ -5,10 +5,25 @@
 #ifndef BICYCLEPOWERPLAN_BICYCLEPLAN_H
 #define BICYCLEPOWERPLAN_BICYCLEPLAN_H
 
+#include <string>
 #include <memory>
+#include "Cyclist.h"
+#include "Track.h"
 
 class Encoding;
 
-float evaluate(std::shared_ptr<Encoding> offspring);
+class BicyclePlan {
+public:
+    BicyclePlan();
+    BicyclePlan(const BicyclePlan &other);
 
-#endif //BICYCLEPOWERPLAN_BICYCLEPLAN_H
+    bool readConfig(const std::string &configFilePath);
+
+    float evaluate(std::shared_ptr<Encoding> offspring);
+
+    std::string m_planName;
+    Cyclist m_cyclist;
+    Track m_track;
+};
+
+#endif // BICYCLEPOWERPLAN_BICYCLEPLAN_H
