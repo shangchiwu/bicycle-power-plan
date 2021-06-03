@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
         cerr << "Bicycle plan initialize failed" << endl;
         exit(1);
     } else {
-        cout << "Bicycle plan initialize success" << endl;
+        cout << "Bicycle plan initialize success, the plan name is " << BicyclePlan::getInstance()->m_planName << endl;
     }
 
     int parentPopulationSize = 64, selectParentSize = 4, offspringPopulationSize = 64;

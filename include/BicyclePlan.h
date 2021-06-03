@@ -5,8 +5,9 @@
 #ifndef BICYCLEPOWERPLAN_BICYCLEPLAN_H
 #define BICYCLEPOWERPLAN_BICYCLEPLAN_H
 
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 #include "Cyclist.h"
 #include "Track.h"
 
@@ -22,14 +23,13 @@ public:
 
     static std::shared_ptr<BicyclePlan> getInstance();
 
-    float evaluate(std::shared_ptr<Encoding> offspring);
+    float evaluate(const std::shared_ptr<Encoding> &offspring);
 
     std::string m_planName;
     Cyclist m_cyclist;
     Track m_track;
 private:
     static std::shared_ptr<BicyclePlan> m_instance;
-
 };
 
 #endif // BICYCLEPOWERPLAN_BICYCLEPLAN_H
