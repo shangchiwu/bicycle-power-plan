@@ -10,10 +10,16 @@
 #include <string>
 #include "nlohmann/json.hpp"
 
+std::shared_ptr<BicyclePlan> BicyclePlan::m_instance = nullptr;
+
+
 BicyclePlan::BicyclePlan() {}
 BicyclePlan::BicyclePlan(const BicyclePlan &other) : m_cyclist(other.m_cyclist), m_track(other.m_track) {}
 
 bool BicyclePlan::readConfig(const std::string &configFilePath) {
+    if (m_instance == nullptr) {
+        m_instance = std::make_shared<BicyclePlan>();
+    }
     std::ifstream ifs(configFilePath);
 
     if (!ifs.good()) {
@@ -26,16 +32,21 @@ bool BicyclePlan::readConfig(const std::string &configFilePath) {
     ifs >> config;
     ifs.close();
 
-    m_planName = config["planName"];
+    m_instance->m_planName = config["planName"];
     const std::string cyclistFile = config["cyclistFile"];
     const std::string trackFile = config["trackFile"];
 
     bool result = true;
-    result &= m_cyclist.readConfig(cyclistFile);
-    result &= m_track.readConfig(trackFile);
+    result &= m_instance->m_cyclist.readConfig(cyclistFile);
+    result &= m_instance->m_track.readConfig(trackFile);
 
     return result;
 }
+
+std::shared_ptr<BicyclePlan> BicyclePlan::getInstance() {
+    return m_instance;
+}
+
 
 float BicyclePlan::evaluate(std::shared_ptr<Encoding> offspring) {
     // TODO

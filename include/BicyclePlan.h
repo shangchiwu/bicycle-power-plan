@@ -12,18 +12,24 @@
 
 class Encoding;
 
-class BicyclePlan {
+class BicyclePlan  {
 public:
     BicyclePlan();
+
     BicyclePlan(const BicyclePlan &other);
 
-    bool readConfig(const std::string &configFilePath);
+    static bool readConfig(const std::string &configFilePath);
+
+    static std::shared_ptr<BicyclePlan> getInstance();
 
     float evaluate(std::shared_ptr<Encoding> offspring);
 
     std::string m_planName;
     Cyclist m_cyclist;
     Track m_track;
+private:
+    static std::shared_ptr<BicyclePlan> m_instance;
+
 };
 
 #endif // BICYCLEPOWERPLAN_BICYCLEPLAN_H

@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char **argv) {
     assert(argc == 2);
     std::string filepath(argv[1]);
-    bool initializeResult = BicyclePlan::initialize(filepath);
+    bool initializeResult = BicyclePlan::readConfig(filepath);
     if (!initializeResult) {
         cerr << "Bicycle plan initialize failed" << endl;
         exit(1);

@@ -48,7 +48,7 @@ void initializePopulation(Population &parentPopulations, int parentPopulationSiz
     // TODO Project initial encoding to feasible encoding
     auto bicyclePlan = BicyclePlan::getInstance();
     for(int i = 0;i < parentPopulationSize;++i) {
-        parentPopulations.push_back(make_shared<Encoding>(bicyclePlan->getSegmentSize()));
+        parentPopulations.push_back(make_shared<Encoding>(bicyclePlan->m_track.m_numSegments));
     }
 }
 
