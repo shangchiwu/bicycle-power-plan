@@ -93,7 +93,7 @@ float Encoding::getPrecalculateObjective() {
 }
 
 void Encoding::averageOverAllParent(const std::vector<Person> &parentPopulation) {
-    float parentPopulationSize = parentPopulation.size();
+    float parentPopulationSize = static_cast<float>(parentPopulation.size());
     for (int i = 0; i < m_n; ++i) {
         m_powerList[i] = 0.0f;
         for (auto &parent: parentPopulation) {

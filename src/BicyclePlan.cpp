@@ -25,7 +25,7 @@ bool BicyclePlan::readConfig(const std::string &configFilePath) {
     std::ifstream ifs(configFilePath);
 
     if (!ifs.good()) {
-        std::cerr << "Error: BicyclePlan::readConfig(): faild to read config file \"" <<
+        std::cerr << "Error: BicyclePlan::readConfig(): failed to read config file \"" <<
                      configFilePath << "\"!" << std::endl;
         return false;
     }
@@ -39,8 +39,12 @@ bool BicyclePlan::readConfig(const std::string &configFilePath) {
     const std::string trackFile = config["trackFile"];
 
     bool result = true;
-    result &= m_instance->m_cyclist.readConfig(cyclistFile);
-    result &= m_instance->m_track.readConfig(trackFile);
+    size_t pos = configFilePath.find_last_of("\\/");
+    auto pathPrefix = (std::string::npos == pos)
+                      ? configFilePath
+                      : configFilePath.substr(0, pos+1);
+    result &= m_instance->m_cyclist.readConfig(pathPrefix+cyclistFile);
+    result &= m_instance->m_track.readConfig(pathPrefix+trackFile);
 
     return result;
 }

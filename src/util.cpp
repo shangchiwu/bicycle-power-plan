@@ -5,7 +5,7 @@
 
 namespace Util {
     float randomBetween0To1() {
-        return rand() / RAND_MAX;
+        return static_cast<float>(rand()) / RAND_MAX;
     }
 
     int greatestCommonDivisor(int a, int b) {

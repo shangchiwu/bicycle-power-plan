@@ -13,7 +13,7 @@
 
 class Encoding;
 
-class BicyclePlan  {
+class BicyclePlan {
 public:
     BicyclePlan();
 
