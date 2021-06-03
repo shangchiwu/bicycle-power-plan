@@ -16,6 +16,7 @@ public:
     float m_elevation;      // unit in (m)
     float m_temperature;    // unit in (*C)
     float m_windSpeed;      // unit in (m/s)
+    float m_grade;          // cached result of elevationDiff / distance
 };
 
 class Track {
