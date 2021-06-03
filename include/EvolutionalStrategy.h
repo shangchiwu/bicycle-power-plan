@@ -8,19 +8,28 @@
 #include <vector>
 #include <memory>
 #include "Encoding.h"
+#include "BicyclePlan.h"
 
-std::shared_ptr<Encoding> evolutionalStrategy(float mu, float rho);
 
-void initializePopulation(std::vector <std::shared_ptr<Encoding >> &parentPopulations);
+typedef std::shared_ptr<Encoding> Person;
 
-std::shared_ptr<Encoding> generateOffspringFromPopulation(const std::vector <std::shared_ptr<Encoding >> &parentPopulations);
+typedef std::vector<Person> Population;
 
-void updateSelfAdaptionRecombination(std::shared_ptr<Encoding> offspring);
+typedef std::pair<float, Person> PersonQuality;
 
-void recombination(std::shared_ptr<Encoding> offspring);
 
-void updateSelfAdaptionMutation(std::shared_ptr<Encoding> offspring);
+Person evolutionStrategy(int parentPopulationSize, int selectParentSize, int offspringPopulationSize);
 
-void mutation(std::shared_ptr<Encoding> offspring);
+Person getBestPersonFromPopulation(Population &population);
+
+void initializePopulation(Population &parentPopulations, int parentPopulationSize);
+
+Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize);
+
+void updateSelfAdaptionMutation(Person &offspring);
+
+void mutation(Person &offspring);
+
+Population survivorSelection(const Population &parentPopulations, const Population &offspringPopulations);
 
 #endif //BICYCLEPOWERPLAN_EVOLUTIONSTRATEGY_H
