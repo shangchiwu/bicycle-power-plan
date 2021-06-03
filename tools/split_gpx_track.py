@@ -82,7 +82,7 @@ def main():
 
             track_data['segments'].append({
                 'segmentId': len(track_data['segments']),
-                'distance': round(current_distance, 3),
+                'distance': round(current_distance * 1000, 3),
                 'totalClimb': round(total_climb, 3),
                 'totalDownhill': round(total_downhill, 3),
                 'elevationDiff': round(total_climb - total_downhill, 3),
