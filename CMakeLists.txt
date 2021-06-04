@@ -44,6 +44,12 @@ list(APPEND HEADER_LIST
 add_executable(BicyclePowerPlan src/main.cpp ${HEADER_LIST} ${SOURCE_LIST})
 target_link_libraries(BicyclePowerPlan) # PRIVATE nlohmann_json::nlohmann_json)
 
+add_executable(
+  testbed
+   ${HEADER_LIST} ${SOURCE_LIST}
+  test/src/BicyclePlan_Test.cpp
+)
+
 #include(FetchContent)
 #FetchContent_Declare(
 #  googletest

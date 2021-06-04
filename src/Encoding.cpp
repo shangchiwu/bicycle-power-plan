@@ -19,7 +19,7 @@ Encoding::Encoding(int N, bool randomShuffle) : m_n(N) {
     m_dirtyFlag = true;
     m_precalculateObjective = 0;
     // FIXME initialize m_selfAdaption using fix value
-    m_selfAdaption = 0.2;
+    m_selfAdaption = 0.1f;
 }
 
 
@@ -56,7 +56,7 @@ float Encoding::operator[](int idx) const {
 }
 
 Encoding &Encoding::swapElement(int aPos, int bPos) {
-    int tmp = m_powerList[aPos];
+    float tmp = m_powerList[aPos];
     m_powerList[aPos] = m_powerList[bPos];
     m_powerList[bPos] = tmp;
     m_dirtyFlag = true;
@@ -64,7 +64,8 @@ Encoding &Encoding::swapElement(int aPos, int bPos) {
 }
 
 Encoding &Encoding::shiftElement(int shiftAmount) {
-    int i, j, k, tmp;
+    int i, j, k;
+    float tmp;
     if (m_n <= 1 || shiftAmount == 0) return *this;
     shiftAmount = shiftAmount % m_n; // make sure shift isn't >n
     int gcd = Util::greatestCommonDivisor(m_n, shiftAmount);

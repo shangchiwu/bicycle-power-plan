@@ -38,6 +38,8 @@ bool Track::readConfig(const std::string &configFilePath) {
     ifs >> config;
     ifs.close();
 
+    m_trackName = config["trackName"];
+    m_trackBaseName = config["trackBaseName"];
     m_numSegments = config["numSegments"];
     m_distance = 0;  // compute myself for the accuracy
     m_segments = new Segment[m_numSegments];
@@ -51,6 +53,7 @@ bool Track::readConfig(const std::string &configFilePath) {
         m_segments[i].m_elevation     = config["segments"][i]["elevation"];
         m_segments[i].m_temperature   = config["segments"][i]["temperature"];
         m_segments[i].m_windSpeed     = config["segments"][i]["windSpeed"];
+        m_segments[i].m_grade = m_segments[i].m_elevationDiff / m_segments[i].m_distance;  // pre-compute cached value
         m_distance += m_segments[i].m_distance;
     }
 
