@@ -44,7 +44,7 @@ public:
     int m_n;
     std::vector<float> m_powerList;
     float m_precalculateObjective;
-    float m_selfAdaption;
+    std::vector<float> m_selfAdaptionList;
 
 private:
     bool m_dirtyFlag;
