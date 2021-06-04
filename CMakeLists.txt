@@ -30,7 +30,8 @@ list(APPEND SOURCE_LIST
         src/BicyclePlan.cpp
         src/Cyclist.cpp
         src/Track.cpp
-        src/Util.cpp
+        src/util.cpp
+        src/timer.cpp
 )
 list(APPEND HEADER_LIST
         include/Encoding.h
@@ -38,7 +39,8 @@ list(APPEND HEADER_LIST
         include/BicyclePlan.h
         include/Cyclist.h
         include/Track.h
-        include/Util.H
+        include/util.h
+        include/timer.h
 )
 
 add_executable(BicyclePowerPlan src/main.cpp ${HEADER_LIST} ${SOURCE_LIST})
