@@ -1,12 +1,12 @@
 #include "util.h"
 #include <random>
+#include <ctime>
 
 namespace Util {
 
     // random utility
 
-    std::random_device randomDevice;
-    std::mt19937 randomGenerator(randomDevice());
+    std::mt19937 randomGenerator((unsigned int) std::time(nullptr));
     std::uniform_real_distribution<float> uniformFloatDistribution(0.0f, 1.0f);
     std::normal_distribution<float> normalDistribution(0.0f, 1.0f);
 
