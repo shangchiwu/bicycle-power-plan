@@ -18,7 +18,11 @@ int main(int argc, char **argv) {
 
     int parentPopulationSize = 64, selectParentSize = 4, offspringPopulationSize = 64;
     Person bestPerson = evolutionStrategy(parentPopulationSize, selectParentSize, offspringPopulationSize);
-    cout << "Self adaption value: " << bestPerson->m_selfAdaption << endl;
+    cout << "Self adaption value: ";
+    for (auto i: bestPerson->m_selfAdaptionList) {
+        cout << i << " ";
+    }
+    cout << endl;
     cout << "Calculate objective: " << bestPerson->m_precalculateObjective << endl;
     cout << "Best encoding: " << *bestPerson << endl;
 }

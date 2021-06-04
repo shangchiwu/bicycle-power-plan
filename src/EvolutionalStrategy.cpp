@@ -56,7 +56,7 @@ Person getBestPersonFromPopulation(Population &population) {
 void initializePopulation(Population &parentPopulations, int parentPopulationSize) {
     // TODO Project initial encoding to feasible encoding
     auto bicyclePlan = BicyclePlan::getInstance();
-    for(int i = 0;i < parentPopulationSize;++i) {
+    for (int i = 0; i < parentPopulationSize; ++i) {
         parentPopulations.push_back(make_shared<Encoding>(bicyclePlan->m_track.m_numSegments));
     }
 }
@@ -76,29 +76,31 @@ Person generateOffspringFromPopulation(const Population &parentPopulations, int 
 }
 
 void updateSelfAdaptionMutation(Person &offspring) {
-    // first order learning rate
+    // multi value learning rate
+    // NOTE: dividend can be replace to any other value
     float tau = 1.f / static_cast<float>(sqrt(2 * offspring->m_n));
+    float tauPrime = 1.f / static_cast<float>(sqrt(2 * sqrt(offspring->m_n)));
     float EPSILON = 0.3f;
 
     std::random_device randomDevice;
     std::mt19937 generator(randomDevice());
     normal_distribution<float> normalDistribution(0.0, 1.0);
 
-    offspring->m_selfAdaption = max(offspring->m_selfAdaption * exp(tau * normalDistribution(generator)), EPSILON);
+    for (int i = 0; i < offspring->m_n; ++i) {
+        offspring->m_selfAdaptionList[i] = max(offspring->m_selfAdaptionList[i] *
+                                               exp(tau * normalDistribution(generator) +
+                                                   tauPrime * normalDistribution(generator)), EPSILON);
+    }
 }
 
 void mutation(Person &offspring) {
     std::random_device randomDevice;
     std::mt19937 generator(randomDevice());
     normal_distribution<float> normalDistribution(0.0, 1.0);
-    for (auto &gene: offspring->m_powerList) {
-        gene += offspring->m_selfAdaption * normalDistribution(generator);
+    for (int i = 0; i < offspring->m_n; ++i) {
+        (*offspring)[i] += offspring->m_selfAdaptionList[i] * normalDistribution(generator);
         // Project it to non-zero
-        if (gene < 0.01f) {
-            gene = 0.01f;
-        } else if (gene > 1.0f) {
-            gene = 1.0f;
-        }
+        (*offspring)[i] = Util::clamp((*offspring)[i], .01f, 1.f);
     }
 
 }
