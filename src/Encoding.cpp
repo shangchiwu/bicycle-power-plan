@@ -19,18 +19,24 @@ Encoding::Encoding(int N, bool randomShuffle) : m_n(N) {
     m_dirtyFlag = true;
     m_precalculateObjective = 0;
     // FIXME initialize m_selfAdaption using fix value
-    m_selfAdaption = 0.1f;
+    m_selfAdaptionList.resize(N);
+    for (auto &i: m_selfAdaptionList) {
+        i = 0.1f;
+    }
 }
 
 
 Encoding &Encoding::operator=(const Encoding &encoding) {
     if (&encoding != this) {
-        m_powerList.reserve(encoding.m_powerList.size());
+        m_powerList.resize(encoding.m_powerList.size());
         for (int i = 0; i < encoding.m_powerList.size(); ++i) {
             m_powerList[i] = encoding.m_powerList[i];
         }
+        m_n = encoding.m_n;
         m_precalculateObjective = encoding.m_precalculateObjective;
-        m_selfAdaption = encoding.m_selfAdaption;
+        for (int i = 0; i < m_n; ++i) {
+            m_selfAdaptionList[i] = encoding.m_selfAdaptionList[i];
+        }
 
         m_dirtyFlag = encoding.m_dirtyFlag;
     }
@@ -103,8 +109,15 @@ void Encoding::averageOverAllParent(const std::vector<Person> &parentPopulation)
         m_powerList[i] /= parentPopulationSize;
     }
     // I use average self-adaptive parameter
-    for (auto &parent: parentPopulation) {
-        m_selfAdaption += parent->m_selfAdaption;
+    for (int i = 0; i < m_n; ++i) {
+        m_selfAdaptionList[i] = 0.0f;
     }
-    m_selfAdaption /= parentPopulationSize;
+    for (auto &parent: parentPopulation) {
+        for (int i = 0; i < m_n; ++i) {
+            m_selfAdaptionList[i] = parent->m_selfAdaptionList[i];
+        }
+    }
+    for (int i = 0; i < m_n; ++i) {
+        m_selfAdaptionList[i] /= parentPopulationSize;
+    }
 }
