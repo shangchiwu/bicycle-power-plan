@@ -1,13 +1,20 @@
 cmake_minimum_required(VERSION 3.1.3)
 project(BicyclePowerPlan)
 
-set(PROFILE_SUPPORT ON)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message("release mode")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+else()
+    message("debug mode")
+    set(PROFILE_SUPPORT ON)
+    if (PROFILE_SUPPORT)
+        add_compile_definitions(PROFILE_PROJECT)
+    endif()
+endif()
 
 include_directories("./include")
-
-if (PROFILE_SUPPORT)
-    add_compile_definitions(PROFILE_PROJECT)
-endif()
 
 # include(FetchContent)
 
