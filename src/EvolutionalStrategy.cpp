@@ -15,8 +15,13 @@ Person evolutionStrategy(int parentPopulationSize, int selectParentSize, int off
     Population parentPopulations;
     Person bestPerson;
     initializePopulation(parentPopulations, parentPopulationSize);
+//    for(auto person: parentPopulations) {
+//        cout << "Encoding: " << *person << ", objective is " << person->getPrecalculateObjective() << endl;
+//    }
+//    getchar();
     bestPerson = getBestPersonFromPopulation(parentPopulations);
     for (int i = 0; i < ITERATION; ++i) {
+//        cout << "Iteration: " << i << endl;
         Population offspringPopulations;
         for (int j = 0; j < offspringPopulationSize; ++j) {
             Person newOffspring = generateOffspringFromPopulation(parentPopulations, selectParentSize);
@@ -26,6 +31,10 @@ Person evolutionStrategy(int parentPopulationSize, int selectParentSize, int off
         }
         parentPopulations = survivorSelection(parentPopulations, offspringPopulations);
         bestPerson = getBestPersonFromPopulation(parentPopulations);
+//        for(auto person: parentPopulations) {
+//            cout << "Encoding: " << *person << ", objective is " << person->getPrecalculateObjective() << endl;
+//        }
+//        getchar();
     }
     return bestPerson;
 }
@@ -68,7 +77,7 @@ Person generateOffspringFromPopulation(const Population &parentPopulations, int 
 
 void updateSelfAdaptionMutation(Person &offspring) {
     // first order learning rate
-    float tau = 1. / sqrt(2 * offspring->m_n);
+    float tau = 1.f / static_cast<float>(sqrt(2 * offspring->m_n));
     float EPSILON = 0.3f;
 
     std::random_device randomDevice;
@@ -84,7 +93,14 @@ void mutation(Person &offspring) {
     normal_distribution<float> normalDistribution(0.0, 1.0);
     for (auto &gene: offspring->m_powerList) {
         gene += offspring->m_selfAdaption * normalDistribution(generator);
+        // Project it to non-zero
+        if (gene < 0.01f) {
+            gene = 0.01f;
+        } else if (gene > 1.0f) {
+            gene = 1.0f;
+        }
     }
+
 }
 
 Population survivorSelection(const Population &parentPopulations, const Population &offspringPopulations) {
