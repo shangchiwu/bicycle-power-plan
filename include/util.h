@@ -5,11 +5,14 @@ namespace Util {
 
     // random utility
     int randomIntUniform(int min, int max);
+
     float randomFloatUniform();
-    float randomNromal();
+
+    float randomNormal();
 
     // math utility
     float clamp(float val, float ra, float rb);
+
     int greatestCommonDivisor(int a, int b);
 }
 

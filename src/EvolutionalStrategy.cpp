@@ -67,7 +67,7 @@ Person generateOffspringFromPopulation(const Population &parentPopulations, int 
     Population selectedParentPopulation;
     for (int i = 0; i < selectParentSize; ++i) {
         // FIXME currently use random select parent
-        selectedParentPopulation.push_back(parentPopulations[Util::generateRandomParentIdx(parentPopulations)]);
+        selectedParentPopulation.push_back(parentPopulations[Util::randomIntUniform(0, static_cast<int>(parentPopulations.size())-1)]);
     }
     int roadAmount = parentPopulations[0]->m_n;
     Person offspring = make_shared<Encoding>(roadAmount);
@@ -82,23 +82,16 @@ void updateSelfAdaptionMutation(Person &offspring) {
     float tauPrime = 1.f / static_cast<float>(sqrt(2 * sqrt(offspring->m_n)));
     float EPSILON = 0.3f;
 
-    std::random_device randomDevice;
-    std::mt19937 generator(randomDevice());
-    normal_distribution<float> normalDistribution(0.0, 1.0);
-
     for (int i = 0; i < offspring->m_n; ++i) {
         offspring->m_selfAdaptionList[i] = max(offspring->m_selfAdaptionList[i] *
-                                               exp(tau * normalDistribution(generator) +
-                                                   tauPrime * normalDistribution(generator)), EPSILON);
+                                               exp(tau * Util::randomNormal() +
+                                                   tauPrime * Util::randomNormal()), EPSILON);
     }
 }
 
 void mutation(Person &offspring) {
-    std::random_device randomDevice;
-    std::mt19937 generator(randomDevice());
-    normal_distribution<float> normalDistribution(0.0, 1.0);
     for (int i = 0; i < offspring->m_n; ++i) {
-        (*offspring)[i] += offspring->m_selfAdaptionList[i] * normalDistribution(generator);
+        (*offspring)[i] += offspring->m_selfAdaptionList[i] * Util::randomNormal();
         // Project it to non-zero
         (*offspring)[i] = Util::clamp((*offspring)[i], .01f, 1.f);
     }
