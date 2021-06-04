@@ -1,8 +1,5 @@
 #include "util.h"
-#include <memory>
-#include <vector>
 #include <random>
-#include <EvolutionalStrategy.h>
 
 namespace Util {
 
