@@ -1,17 +1,15 @@
-#include <cstdlib>
 #include <vector>
 #include <memory>
-
-class Encoding;
+#include <
 
 namespace Util {
 
-    float randomBetween0To1();
+    // random utility
+    int randomIntUniform();
+    float randomFloatUniform();
+    float randomNromal();
 
-    int greatestCommonDivisor(int a, int b);
-
-    int generateRandomParentIdx(const std::vector <std::shared_ptr<Encoding >> &parentPopulations);
-
+    // math utility
     float clamp(float val, float ra, float rb);
-
+    int greatestCommonDivisor(int a, int b);
 }

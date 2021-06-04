@@ -1,27 +1,39 @@
 #include "util.h"
 #include <memory>
 #include <vector>
+#include <random>
 #include <EvolutionalStrategy.h>
 
 namespace Util {
-    float randomBetween0To1() {
-        return static_cast<float>(rand()) / RAND_MAX;
+
+    // random utility
+
+    std::random_device randomDevice;
+    std::mt19937 randomGenerator(randomDevice());
+    std::uniform_real_distribution<float> uniformFloatDistribution(0.0f, 1.0f);
+    std::normal_distribution<float> normalDistribution(0.0f, 1.0f);
+
+    int randomIntUniform(int min, int max) {
+        std::uniform_int_distribution<int> distribution(min, max);
+        return distribution(randomGenerator);
+    }
+
+    float randomFloatUniform() {
+        return uniformFloatDistribution(randomGenerator);
+    }
+
+    float randomNromal() {
+        return normalDistribution(randomGenerator);
+    }
+
+    // math utility
+
+    float clamp(float val, float ra, float rb) {
+        return val < ra?ra:val>rb?rb:val;
     }
 
     int greatestCommonDivisor(int a, int b) {
         return b == 0 ? a : greatestCommonDivisor(b, a % b);
-    }
-
-    int generateRandomParentIdx(const Population &parentPopulations) {
-        int idx = static_cast<int>(parentPopulations.size() * randomBetween0To1());
-        if (idx >= parentPopulations.size()) {
-            idx--;
-        }
-        return idx;
-    }
-
-    float clamp(float val, float ra, float rb) {
-        return val < ra?ra:val>rb?rb:val;
     }
 
 }
