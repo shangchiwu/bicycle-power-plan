@@ -8,7 +8,7 @@ Encoding::Encoding(int N, bool randomShuffle) : m_n(N) {
     m_powerList.resize(N);
     if (randomShuffle) {
         for (int i = 0; i < N; ++i) {
-            m_powerList[i] = Util::randomBetween0To1();
+            m_powerList[i] = Util::randomFloatUniform();
         }
     } else {
         for (int i = 0; i < N; ++i) {

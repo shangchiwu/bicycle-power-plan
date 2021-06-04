@@ -19,6 +19,8 @@
 #include <iostream>
 #include <memory>
 
+class Encoding;
+
 typedef std::shared_ptr<Encoding> Person;
 
 class Encoding : public std::enable_shared_from_this<Encoding>{
@@ -49,6 +51,8 @@ public:
 private:
     bool m_dirtyFlag;
 };
+
+
 
 
 #endif //BICYCLEPOWERPLAN_ENCODING_H

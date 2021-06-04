@@ -19,14 +19,14 @@ namespace Util {
         return uniformFloatDistribution(randomGenerator);
     }
 
-    float randomNromal() {
+    float randomNormal() {
         return normalDistribution(randomGenerator);
     }
 
     // math utility
 
     float clamp(float val, float ra, float rb) {
-        return val < ra?ra:val>rb?rb:val;
+        return val < ra ? ra : val > rb ? rb : val;
     }
 
     int greatestCommonDivisor(int a, int b) {
