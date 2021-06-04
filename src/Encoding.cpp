@@ -4,8 +4,8 @@
 
 using namespace std;
 
-Encoding::Encoding(int N, bool randomShuffle) {
-    m_powerList.reserve(N);
+Encoding::Encoding(int N, bool randomShuffle) : m_n(N) {
+    m_powerList.resize(N);
     if (randomShuffle) {
         for (int i = 0; i < N; ++i) {
             m_powerList[i] = Util::randomBetween0To1();
@@ -18,7 +18,8 @@ Encoding::Encoding(int N, bool randomShuffle) {
 
     m_dirtyFlag = true;
     m_precalculateObjective = 0;
-    // TODO initialize m_selfAdaption
+    // FIXME initialize m_selfAdaption using fix value
+    m_selfAdaption = 0.2;
 }
 
 
@@ -83,21 +84,26 @@ Encoding &Encoding::shiftElement(int shiftAmount) {
 }
 
 float Encoding::getPrecalculateObjective() {
-    if(m_dirtyFlag) {
-        const shared_ptr<BicyclePlan> bicyclePlan = BicyclePlan::getInstance();
-        m_precalculateObjective = bicyclePlan->evaluate(std::unique_ptr<Encoding>(this));
+    if (m_dirtyFlag) {
+        auto bicyclePlan = BicyclePlan::getInstance();
+        m_precalculateObjective = bicyclePlan->evaluate(shared_from_this());
         m_dirtyFlag = false;
     }
     return m_precalculateObjective;
 }
 
 void Encoding::averageOverAllParent(const std::vector<Person> &parentPopulation) {
-    float parentPopulationSize = parentPopulation.size();
-    for (int i = 0;i < m_n;++i) {
+    float parentPopulationSize = static_cast<float>(parentPopulation.size());
+    for (int i = 0; i < m_n; ++i) {
         m_powerList[i] = 0.0f;
-        for(auto &parent: parentPopulation) {
+        for (auto &parent: parentPopulation) {
             m_powerList[i] += (*parent)[i];
         }
         m_powerList[i] /= parentPopulationSize;
     }
+    // I use average self-adaptive parameter
+    for (auto &parent: parentPopulation) {
+        m_selfAdaption += parent->m_selfAdaption;
+    }
+    m_selfAdaption /= parentPopulationSize;
 }

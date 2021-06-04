@@ -16,21 +16,20 @@ class Encoding;
 class BicyclePlan {
 public:
     BicyclePlan();
+
     BicyclePlan(const BicyclePlan &other);
 
-    static bool initialize(const std::string &filepath);
-    static std::shared_ptr<BicyclePlan> getInstance();
-    float evaluate(std::shared_ptr<Encoding> offspring);
+    static bool readConfig(const std::string &configFilePath);
 
-    bool readConfig(const std::string &configFilePath);
-    float evaluate(const std::vector<float> &segmentOutputPowerRatio);
+    static std::shared_ptr<BicyclePlan> getInstance();
+
+    float evaluate(const std::shared_ptr<Encoding> &offspring);
 
     std::string m_planName;
     Cyclist m_cyclist;
     Track m_track;
-
 private:
-    static std::shared_ptr<BicyclePlan> instance;
+    static std::shared_ptr<BicyclePlan> m_instance;
 };
 
 #endif // BICYCLEPOWERPLAN_BICYCLEPLAN_H

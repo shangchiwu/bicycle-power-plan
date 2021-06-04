@@ -12,4 +12,6 @@ namespace Util {
 
     int generateRandomParentIdx(const std::vector <std::shared_ptr<Encoding >> &parentPopulations);
 
+    float clamp(float val, float ra, float rb);
+
 }

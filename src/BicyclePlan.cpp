@@ -4,47 +4,28 @@
 
 #include "BicyclePlan.h"
 #include "Track.h"
-#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <fstream>
 #include <memory>
 #include <string>
-#include <vector>
 #include "nlohmann/json.hpp"
+#include "Encoding.h"
+
+std::shared_ptr<BicyclePlan> BicyclePlan::m_instance = nullptr;
+
 
 BicyclePlan::BicyclePlan() {}
 BicyclePlan::BicyclePlan(const BicyclePlan &other) : m_cyclist(other.m_cyclist), m_track(other.m_track) {}
 
-std::shared_ptr<BicyclePlan> BicyclePlan::instance = nullptr;
-
-bool BicyclePlan::initialize(const std::string &filepath) {
-    std::shared_ptr<BicyclePlan> plan;
-    const bool result = plan->readConfig(filepath);
-
-    if (!result)  // failed to read config file
-        return false;
-
-    // set static instance
-    instance = plan;
-
-    return true;
-}
-
-std::shared_ptr<BicyclePlan> BicyclePlan::getInstance() {
-    return instance;
-}
-
-float BicyclePlan::evaluate(std::shared_ptr<Encoding> offspring) {
-    // TODO: evaluate encoding by output power vector
-    return 0;
-}
-
 bool BicyclePlan::readConfig(const std::string &configFilePath) {
+    if (m_instance == nullptr) {
+        m_instance = std::make_shared<BicyclePlan>();
+    }
     std::ifstream ifs(configFilePath);
-    
+
     if (!ifs.good()) {
-        std::cerr << "Error: BicyclePlan::readConfig(): faild to read config file \"" <<
+        std::cerr << "Error: BicyclePlan::readConfig(): failed to read config file \"" <<
                      configFilePath << "\"!" << std::endl;
         return false;
     }
@@ -53,19 +34,27 @@ bool BicyclePlan::readConfig(const std::string &configFilePath) {
     ifs >> config;
     ifs.close();
 
-    m_planName = config["planName"];
+    m_instance->m_planName = config["planName"];
     const std::string cyclistFile = config["cyclistFile"];
     const std::string trackFile = config["trackFile"];
 
     bool result = true;
-    result &= m_cyclist.readConfig(cyclistFile);
-    result &= m_track.readConfig(trackFile);
+    size_t pos = configFilePath.find_last_of("\\/");
+    auto pathPrefix = (std::string::npos == pos)
+                      ? configFilePath
+                      : configFilePath.substr(0, pos+1);
+    result &= m_instance->m_cyclist.readConfig(pathPrefix+cyclistFile);
+    result &= m_instance->m_track.readConfig(pathPrefix+trackFile);
 
     return result;
 }
 
-float BicyclePlan::evaluate(const std::vector<float> &segmentOutputPowerRatio) {
-    
+std::shared_ptr<BicyclePlan> BicyclePlan::getInstance() {
+    return m_instance;
+}
+
+float BicyclePlan::evaluate(const std::shared_ptr<Encoding> &offspring) {
+
     // constant params
     constexpr int newtonMaxIterations = 10;  // for newton's method
     constexpr float newtonMaxTolerance = 0.001f;
@@ -77,12 +66,12 @@ float BicyclePlan::evaluate(const std::vector<float> &segmentOutputPowerRatio) {
 
     // iterate all segments
     for (int i = 0; i < m_track.m_numSegments; ++i) {
-        
+
         // compute penalty of low energy
         const Segment &segment = m_track[i];
         const float leftEnergyRatio = leftEnergy / m_cyclist.m_totalEnergy;
         const float maxOutputPowerRatio = (1.0f - std::pow(1.0f - leftEnergyRatio, 3.0f));
-        const float outputPower = std::min(segmentOutputPowerRatio[i], maxOutputPowerRatio) * m_cyclist.m_maxPower;
+        const float outputPower = std::min((*offspring)[i], maxOutputPowerRatio) * m_cyclist.m_maxPower;
 
         // prepare params
         const float airDensity = (1.293f - 0.00426f * segment.m_temperature) * std::exp(segment.m_elevation / 7000.0f);
@@ -112,7 +101,7 @@ float BicyclePlan::evaluate(const std::vector<float> &segmentOutputPowerRatio) {
         float time = 0.0f;
         if (velocity > 0.0f)
             time = segment.m_distance / velocity;
-        
+
         // compute other params
         const float consumedEnergy = time * outputPower / 0.25f / 1000.0f;
         // const float weightLoss = consumedEnergy / 32318.0f;

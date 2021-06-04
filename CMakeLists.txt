@@ -28,12 +28,16 @@ list(APPEND SOURCE_LIST
         src/Encoding.cpp
         src/EvolutionalStrategy.cpp
         src/BicyclePlan.cpp
+        src/Cyclist.cpp
+        src/Track.cpp
         src/Util.cpp
 )
 list(APPEND HEADER_LIST
         include/Encoding.h
         include/EvolutionalStrategy.h
         include/BicyclePlan.h
+        include/Cyclist.h
+        include/Track.h
         include/Util.H
 )
 
