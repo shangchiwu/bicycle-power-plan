@@ -14,7 +14,6 @@
 
 std::shared_ptr<BicyclePlan> BicyclePlan::m_instance = nullptr;
 
-
 BicyclePlan::BicyclePlan() {}
 BicyclePlan::BicyclePlan(const BicyclePlan &other) : m_cyclist(other.m_cyclist), m_track(other.m_track) {}
 
@@ -58,7 +57,7 @@ float BicyclePlan::evaluate(const std::shared_ptr<Encoding> &offspring) {
     // constant params
     constexpr int newtonMaxIterations = 10;  // for newton's method
     constexpr float newtonMaxTolerance = 0.001f;
-    constexpr float failureTimePenalty = 86400.0f;
+    constexpr float failureVelocity = 0.05f;
 
     // accumulative params
     float leftEnergy = m_cyclist.m_totalEnergy;
@@ -71,7 +70,8 @@ float BicyclePlan::evaluate(const std::shared_ptr<Encoding> &offspring) {
         const Segment &segment = m_track[i];
         const float leftEnergyRatio = leftEnergy / m_cyclist.m_totalEnergy;
         const float maxOutputPowerRatio = (1.0f - std::pow(1.0f - leftEnergyRatio, 3.0f));
-        const float outputPower = std::min((*offspring)[i], maxOutputPowerRatio) * m_cyclist.m_maxPower;
+        // const float outputPower = std::min((*offspring)[i], maxOutputPowerRatio) * m_cyclist.m_maxPower;
+        const float outputPower = (*offspring)[i] * m_cyclist.m_maxPower;
 
         // prepare params
         const float airDensity = (1.293f - 0.00426f * segment.m_temperature) * std::exp(segment.m_elevation / 7000.0f);
@@ -89,7 +89,7 @@ float BicyclePlan::evaluate(const std::shared_ptr<Encoding> &offspring) {
             const float f = velocityIter * (airCoef * totalWindSpeed * totalWindSpeed + totalResistance) - m_cyclist.m_transmissionEfficiency * outputPower;
             const float fp = airCoef * (3.0f * velocityIter + segment.m_windSpeed) * totalWindSpeed + totalResistance;
             const float velocityOld = velocityIter;
-            velocityIter = velocityIter - f / fp;
+            velocityIter -= f / fp;
             if (std::fabs(velocityIter - velocityOld) < newtonMaxTolerance) {
                 velocity = velocityIter;  // converged
                 break;
@@ -104,16 +104,20 @@ float BicyclePlan::evaluate(const std::shared_ptr<Encoding> &offspring) {
 
         // compute other params
         const float consumedEnergy = time * outputPower / 0.25f / 1000.0f;
-        // const float weightLoss = consumedEnergy / 32318.0f;
-
-        // record the result of this segment
-        totalTime += time;
         leftEnergy -= consumedEnergy;
-    }
+        // const float weightLoss = consumedEnergy / 32318.0f;
+        
+        // compute time with break time
+        velocity *= maxOutputPowerRatio;
 
-    // test whether the cyclist is dead
-    if (leftEnergy <= 0.0f)
-        totalTime += failureTimePenalty;
+        // test whether the cyclist is dead
+        if (leftEnergy <= 0.0f) {
+            velocity = failureVelocity;
+        }
+
+        time = segment.m_distance / velocity;
+        totalTime += time;
+    }
 
     return totalTime;
 }

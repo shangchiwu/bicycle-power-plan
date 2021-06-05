@@ -188,33 +188,9 @@ const inputValue = () => {
 
 // compute
 
-const compute = params => {
-
-  // common part
-  const airDensity = (1.293 - 0.00426 * params.temperature) * Math.exp(-params.elevation / 7000);
-  const airResistanceCoef = 0.5 * params.frontalAreaCoef * airDensity;
-  const totalWeight = 9.8 * (params.riderWeight + params.bikeWeight);
-  const totalResistance = totalWeight * (params.grade + params.rollingResistanceCoef);
-
-  // compute velocity from power
-  params.velocity = newtonMethod(airResistanceCoef, params.headWind, totalResistance, params.transmissionEfficiency, params.power);
-
-  // compute time
-  if (params.velocity > 0)
-    params.time = params.distance / params.velocity;
-  else
-    params.time = 0;
-  
-  // compute other params
-  params.consumedEnergy = params.time * params.power / 0.25 / 1000;
-  params.weightLoss = params.consumedEnergy / 32318;
-
-  return params;
-};
-
 const newtonMethod = (airResistanceCoef, headWind, totalResistance, transmissionEfficiency, power) => {
   const maxIterations = 10;
-  const tolerance = 0.05;
+  const tolerance = 0.001;
   let velocity = 20; // initial guess
 
   for (let i = 0; i < maxIterations; ++i) {
@@ -232,6 +208,9 @@ const newtonMethod = (airResistanceCoef, headWind, totalResistance, transmission
 };
 
 const computeTrack = () => {
+
+  const failureVelocity = 0.05;
+
   // get params
   const initialParams = inputValue();
   let lastParams = {
@@ -257,13 +236,41 @@ const computeTrack = () => {
 
     // penalty of low energy
     const leftEnergyRatio = params.leftEnergy / params.totalEnergy;
-    const outputPower = (1 - Math.pow(1 - leftEnergyRatio, 3)) * params.maxPower;
+    const maxOutputPowerRatio = (1 - Math.pow(1 - leftEnergyRatio, 3));
+    // const outputPower = Math.min(1, maxOutputPowerRatio) * params.maxPower;
+    const outputPower = params.maxPower;
     params.leftEnergyRatio = leftEnergyRatio;
     params.power = outputPower;
 
-    // compute
-    params = compute(params);
+    // common part
+    const airDensity = (1.293 - 0.00426 * params.temperature) * Math.exp(-params.elevation / 7000);
+    const airResistanceCoef = 0.5 * params.frontalAreaCoef * airDensity;
+    const totalWeight = 9.8 * (params.riderWeight + params.bikeWeight);
+    const totalResistance = totalWeight * (params.grade + params.rollingResistanceCoef);
+
+    // compute velocity from power
+    params.velocity = newtonMethod(airResistanceCoef, params.headWind, totalResistance, params.transmissionEfficiency, params.power);
+
+    // compute time
+    if (params.velocity > 0)
+      params.time = params.distance / params.velocity;
+    else
+      params.time = 0;
+    
+    // compute other params
+    params.consumedEnergy = params.time * params.power / 0.25 / 1000;
+    params.weightLoss = params.consumedEnergy / 32318;
     params.leftEnergy -= params.consumedEnergy;
+
+    // compute time with break time
+    params.velocity *= maxOutputPowerRatio;
+
+    // test whether the cyclist is dead
+    if (params.leftEnergy <= 0) {
+      params.velocity = failureVelocity;
+    }
+
+    params.time = params.distance / params.velocity;
     params.totalTime += params.time;
 
     // record
