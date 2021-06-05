@@ -21,7 +21,7 @@ void Timer::reset() {
     _stop_time = _start_time;
 }
 
-unsigned long long Timer::getDuration() {
+unsigned long long Timer::getDuration() const {
     if (_state == TimerState::TIMING)
         return (_duration + (ClockType::now() - _start_time)).count();
     return _duration.count();

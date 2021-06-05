@@ -57,7 +57,7 @@ public:
      * 
      * \return The duration in nanoseconds.
      */
-    unsigned long long getDuration();
+    unsigned long long getDuration() const;
 
     /**
      * Get the state of the timer.

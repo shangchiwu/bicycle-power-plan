@@ -36,6 +36,7 @@ list(APPEND SOURCE_LIST
         src/EvolutionalStrategy.cpp
         src/BicyclePlan.cpp
         src/Cyclist.cpp
+        src/Config.cpp
         src/Track.cpp
         src/util.cpp
         src/timer.cpp
@@ -45,6 +46,7 @@ list(APPEND HEADER_LIST
         include/EvolutionalStrategy.h
         include/BicyclePlan.h
         include/Cyclist.h
+        include/Config.h
         include/Track.h
         include/util.h
         include/timer.h
