@@ -4,6 +4,8 @@
 #include <Config.h>
 #include "BicyclePlan.h"
 #include "timer.h"
+#include <fstream>
+
 
 using namespace std;
 
@@ -25,28 +27,24 @@ void pinCPU (int cpu_number)
 }
 #elif _WIN32
 #include <Windows.h>
-#include <fstream>
 
 void pinCPU (int cpu_number)
 {
     HANDLE process = GetCurrentProcess();
-    DWORD_PTR processAffinityMask = 1 << cpu_number;
+    DWORD_PTR processAffinityMask = 1UL << cpu_number;
 
     BOOL success = SetProcessAffinityMask(process, processAffinityMask);
 }
 #endif
 
-static void outputStatisticAndEncodingFile(const Person bestPerson, const Timer &timer) {
+static void outputStatisticAndEncodingFile(const Person &bestPerson, const Timer &timer, const EvolutionStrategy &es) {
     auto config = Config::getInstance();
 
     // Output statistic file
-    fstream fs;
-    fs.open(config->m_statisticLocation, std::ios::out);
-    fs << "Evaluation time(ms), Calculation time" << endl;
-    fs << (double) timer.getDuration() / 1e6f << " " << bestPerson->getPrecalculateObjective() << endl;
-    fs.close();
+    es.statistic(config->m_statisticLocation);
 
     // Output encoding file
+    fstream fs;
     fs.open(config->m_encodingLocation, std::ios::out);
     fs << *bestPerson;
     fs.close();
@@ -72,6 +70,7 @@ int main(int argc, char **argv) {
     }
 
     auto config = Config::getInstance();
+    cout << "Seed is " << config->m_seed << endl;
 
     // initialize bicycle plan
 
@@ -88,6 +87,8 @@ int main(int argc, char **argv) {
     const int selectParentSize = config->m_selectPopulationSize;
     const int offspringPopulationSize = config->m_offspringPopulationSize;
 
+    Util::initializeUtil();
+
     // compute
 
     cout << "[Start] Evolution Strategy..." << endl;
@@ -95,7 +96,9 @@ int main(int argc, char **argv) {
     Timer timer;
     timer.start();
 
-    const Person bestPerson = evolutionStrategy(parentPopulationSize, selectParentSize, offspringPopulationSize);
+    EvolutionStrategy evolutionStrategy;
+    evolutionStrategy.initialize();
+    const Person bestPerson = evolutionStrategy.evaluate(parentPopulationSize, selectParentSize, offspringPopulationSize);
 
     timer.stop();
     const double executionTime = (double) timer.getDuration() / 1e9f;
@@ -111,7 +114,7 @@ int main(int argc, char **argv) {
     cout << "Calculate objective: " << bestPerson->m_precalculateObjective << endl;
     cout << "Best encoding: " << *bestPerson << endl;
 
-    outputStatisticAndEncodingFile(bestPerson, timer);
+    outputStatisticAndEncodingFile(bestPerson, timer, evolutionStrategy);
 
     return 0;
 }

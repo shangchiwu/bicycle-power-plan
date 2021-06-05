@@ -17,16 +17,29 @@ typedef std::vector<Person> Population;
 
 typedef std::pair<float, Person> PersonQuality;
 
+class EvolutionStrategy {
+public:
+    void initialize();
 
-Person evolutionStrategy(int parentPopulationSize, int selectParentSize, int offspringPopulationSize);
+    Person evaluate(int parentPopulationSize, int selectParentSize, int offspringPopulationSize);
+
+    void updateSelfAdaptionMutation(Person &offspring);
+
+    void statistic(const std::string &filepath) const;
+
+    std::vector<float> m_executionTimeList;
+    std::vector<float> m_evaluationTimeList;
+
+    float m_tauFactor = 1.0f;
+    float m_tauPrimeFactor = 1.0f;
+    float m_epsilonFactor= 1.0f;
+};
 
 Person getBestPersonFromPopulation(Population &population);
 
 void initializePopulation(Population &parentPopulations, int parentPopulationSize);
 
 Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize);
-
-void updateSelfAdaptionMutation(Person &offspring);
 
 void mutation(Person &offspring);
 

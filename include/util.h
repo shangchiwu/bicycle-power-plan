@@ -3,6 +3,8 @@
 
 namespace Util {
 
+    void initializeUtil();
+
     // random utility
     int randomIntUniform(int min, int max);
 

@@ -36,6 +36,10 @@ bool Config::readConfig(const string &configFilePath) {
     m_instance->m_statisticLocation = config["statistic_filename"];
     m_instance->m_encodingLocation = config["output_encoding_filename"];
 
+    m_instance->m_tauFactor = config["tauFactor"];
+    m_instance->m_tauPrimeFactor = config["tauPrimeFactor"];
+    m_instance->m_epsilonFactor = config["epsilonFactor"];
+
     m_instance->m_seed = config["seed"];
 
     return true;

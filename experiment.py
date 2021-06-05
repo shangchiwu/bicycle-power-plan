@@ -7,7 +7,7 @@ import time
 
 PROGRAM_LOCATION = 'build/debug/BicyclePowerPlan.exe'
 EXPERIMENT_DATA_LOCATION = "./datasets/"
-PLAN_LIST = ['plan_river_easy.json']
+PLAN_LIST = ['plan_river_easy.json', 'plan_merida_hard_50.json', 'plan_merida_hard_10.json']
 
 TIMES = 40
 
@@ -75,7 +75,7 @@ def experiment_with_basic_config(experiment_path, basic_config_dict):
 def setup_basic_config(experiment_setup_path, experiment_code, basic_config_dict):
     experiment_code_path = os.path.join(experiment_setup_path, experiment_code)
     if not os.path.exists(experiment_code_path):
-        os.mkdir(experiment_code_path)
+        os.makedirs(experiment_code_path)
 
     experiment_with_basic_config(experiment_code_path, basic_config_dict)
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         experiment_setup_name = experiment_filename[:experiment_filename.rfind('.')]
         experiment_setup_path = os.path.join(OUTPUT_DATA_PATH, experiment_setup_name)
         if not os.path.exists(experiment_setup_path):
-            os.mkdir(experiment_setup_path)
+            os.makedirs(experiment_setup_path)
 
         # 1st experiment
         # What you need to modify is..
@@ -95,7 +95,10 @@ if __name__ == "__main__":
             "bicyclePowerPlanLocation": os.path.join(EXPERIMENT_DATA_LOCATION, experiment_filename),
             "parentPopulationSize": 64,
             "selectPopulationSize": 4,
-            "offspringPopulationSize": 64
+            "offspringPopulationSize": 64,
+            "tauFactor": 1.0,
+            "tauPrimeFactor": 1.0,
+            "epsilonFactor": 3.0
             # Optional config if you want to constraint the evaluation time
             # "constraint_evaluation_time": 1000,
             # Optional config if you want to constraint the computation time(in micro seconds)
