@@ -25,6 +25,7 @@ public:
 
     int m_seed;
 
+    int m_iteration = 10000;
     float m_tauFactor = 1.0f;
     float m_tauPrimeFactor = 1.0f;
     float m_epsilonFactor = 1.0f;

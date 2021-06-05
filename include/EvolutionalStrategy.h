@@ -25,11 +25,18 @@ public:
 
     void updateSelfAdaptionMutation(Person &offspring);
 
+    void refreshChanceTable(const Population &parentPopulations);
+
+    Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize);
+
     void statistic(const std::string &filepath) const;
 
     std::vector<float> m_executionTimeList;
     std::vector<float> m_evaluationTimeList;
 
+    std::vector<float> m_chanceTableList;
+
+    int m_iteration;
     float m_tauFactor = 1.0f;
     float m_tauPrimeFactor = 1.0f;
     float m_epsilonFactor= 1.0f;
@@ -38,8 +45,6 @@ public:
 Person getBestPersonFromPopulation(Population &population);
 
 void initializePopulation(Population &parentPopulations, int parentPopulationSize);
-
-Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize);
 
 void mutation(Person &offspring);
 

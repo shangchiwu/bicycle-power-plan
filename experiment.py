@@ -7,7 +7,7 @@ import time
 
 PROGRAM_LOCATION = 'build/debug/BicyclePowerPlan.exe'
 EXPERIMENT_DATA_LOCATION = "./datasets/"
-PLAN_LIST = ['plan_river_easy.json', 'plan_merida_hard_50.json', 'plan_merida_hard_10.json']
+PLAN_LIST = ['plan_merida_hard_50.json', 'plan_merida_hard_10.json'] # 'plan_river_easy.json',
 
 TIMES = 40
 
@@ -94,11 +94,12 @@ if __name__ == "__main__":
         basic_config_dict = {
             "bicyclePowerPlanLocation": os.path.join(EXPERIMENT_DATA_LOCATION, experiment_filename),
             "parentPopulationSize": 64,
-            "selectPopulationSize": 4,
-            "offspringPopulationSize": 64,
-            "tauFactor": 1.0,
-            "tauPrimeFactor": 1.0,
-            "epsilonFactor": 3.0
+            "selectPopulationSize": 1,
+            "offspringPopulationSize": 128,
+            "iteration": 10000,
+            "tauFactor": 8.0,
+            "tauPrimeFactor": 8.0,
+            "epsilonFactor": 0.3
             # Optional config if you want to constraint the evaluation time
             # "constraint_evaluation_time": 1000,
             # Optional config if you want to constraint the computation time(in micro seconds)
