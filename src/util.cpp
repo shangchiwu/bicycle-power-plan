@@ -1,14 +1,20 @@
 #include "util.h"
 #include <random>
 #include <ctime>
+#include <Config.h>
 
 namespace Util {
 
     // random utility
 
-    std::mt19937 randomGenerator((unsigned int) std::time(nullptr));
-    std::uniform_real_distribution<float> uniformFloatDistribution(0.0f, 1.0f);
-    std::normal_distribution<float> normalDistribution(0.0f, 1.0f);
+    static std::mt19937 randomGenerator((unsigned int) std::time(nullptr));
+    static std::uniform_real_distribution<float> uniformFloatDistribution(0.0f, 1.0f);
+    static std::normal_distribution<float> normalDistribution(0.0f, 1.0f);
+
+    void initializeUtil() {
+        auto config = Config::getInstance();
+        randomGenerator = std::mt19937(config->m_seed);
+    }
 
     int randomIntUniform(int min, int max) {
         std::uniform_int_distribution<int> distribution(min, max);

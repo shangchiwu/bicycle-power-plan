@@ -15,7 +15,6 @@ Encoding::Encoding(int N, bool randomShuffle) : m_n(N) {
             m_powerList[i] = (i + 1) / (float) N;
         }
     }
-
     m_dirtyFlag = true;
     m_precalculateObjective = 0;
     // FIXME initialize m_selfAdaption using fix value
@@ -114,10 +113,80 @@ void Encoding::averageOverAllParent(const std::vector<Person> &parentPopulation)
     }
     for (auto &parent: parentPopulation) {
         for (int i = 0; i < m_n; ++i) {
-            m_selfAdaptionList[i] = parent->m_selfAdaptionList[i];
+            m_selfAdaptionList[i] += parent->m_selfAdaptionList[i];
         }
     }
     for (int i = 0; i < m_n; ++i) {
         m_selfAdaptionList[i] /= parentPopulationSize;
+    }
+}
+
+void Encoding::weightVoteOverAllParent(const std::vector<Person> &parentPopulation) {
+    int parentPopulationSize = static_cast<int>(parentPopulation.size());
+    float totalObjective = 0.0f;
+    float maxObjective = 0.0f;
+    std::vector<float> objectiveList;
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        maxObjective = max(maxObjective, objective);
+    }
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        totalObjective += maxObjective - objective;
+    }
+    float endRange = 0.0f;
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        endRange += (maxObjective - objective)/totalObjective;
+        objectiveList.emplace_back(endRange);
+    }
+    for (int i = 0; i < m_n; ++i) {
+        float choose = Util::randomFloatUniform();
+        // winner take all
+        for (int j = 0;j < parentPopulationSize; ++j) {
+            if(choose <= objectiveList[j]) {
+                m_powerList[i] = (*parentPopulation[j])[i];
+                m_selfAdaptionList[i] = parentPopulation[j]->m_selfAdaptionList[i];
+            }
+        }
+    }
+}
+
+void Encoding::weightVoteWithRandomOverAllParent(const std::vector<Person> &parentPopulation) {
+    // add random value to increase its randomness
+    int parentPopulationSize = static_cast<int>(parentPopulation.size());
+    float totalObjective = 0.0f;
+    float maxObjective = 0.0f;
+    std::vector<float> objectiveList;
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        maxObjective = max(maxObjective, objective);
+    }
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        totalObjective += maxObjective - objective;
+    }
+    totalObjective += 20.0f;
+    float endRange = 0.0f;
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        endRange += (maxObjective - objective)/totalObjective;
+        objectiveList.emplace_back(endRange);
+    }
+    for (int i = 0; i < m_n; ++i) {
+        float choose = Util::randomFloatUniform();
+        // winner take all
+        bool chosen = false;
+        for (int j = 0;j < parentPopulationSize; ++j) {
+            if(choose <= objectiveList[j]) {
+                m_powerList[i] = (*parentPopulation[j])[i];
+                m_selfAdaptionList[i] = parentPopulation[j]->m_selfAdaptionList[i];
+                chosen = true;
+            }
+        }
+        if (!chosen) {
+            m_powerList[i] = Util::randomFloatUniform();
+            m_selfAdaptionList[i] = 0.1f;
+        }
     }
 }
