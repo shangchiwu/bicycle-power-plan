@@ -13,14 +13,15 @@ void EvolutionStrategy::initialize() {
     m_tauFactor = config->m_tauFactor;
     m_tauPrimeFactor = config->m_tauPrimeFactor;
     m_epsilonFactor = config->m_epsilonFactor;
+    m_iteration = config->m_iteration;
 }
 
 void EvolutionStrategy::statistic(const std::string &filepath) const {
     fstream fs;
     fs.open(filepath, std::ios::out);
-    fs << "Iteration, Evaluation time(ms), Execution time" << endl;
+    fs << "iteration,evaluation_value,execution_time" << endl;
     for(int i = 0; i < m_executionTimeList.size(); ++i) {
-        fs << i+1 << ", " << m_evaluationTimeList[i] << ", " << m_executionTimeList[i] << endl;
+        fs << i+1 << "," << m_evaluationTimeList[i] << "," << m_executionTimeList[i] << endl;
     }
     fs.close();
 }
@@ -30,7 +31,8 @@ Person EvolutionStrategy::evaluate(int parentPopulationSize, int selectParentSiz
     // mu is parentPopulationSize
     // rho is selectParentSize
     // lambda is offspringPopulationSize
-    constexpr int ITERATION = 10000;
+
+    const int ITERATION = m_iteration;
 
     Population parentPopulations;
     initializePopulation(parentPopulations, parentPopulationSize);
@@ -47,6 +49,7 @@ Person EvolutionStrategy::evaluate(int parentPopulationSize, int selectParentSiz
 //        cout << "Iteration: " << i << endl;
         Timer timer;
         timer.start();
+        refreshChanceTable(parentPopulations);
         for (int j = 0; j < offspringPopulationSize; ++j) {
             Person newOffspring = generateOffspringFromPopulation(parentPopulations, selectParentSize);
             updateSelfAdaptionMutation(newOffspring);
@@ -60,6 +63,12 @@ Person EvolutionStrategy::evaluate(int parentPopulationSize, int selectParentSiz
         }
 //        for(auto person: parentPopulations) {
 //            cout << "Encoding: " << *person << ", objective is " << person->getPrecalculateObjective() << endl;
+//            cout << "self-adaption: ";
+//            for(int i = 0; i < person->m_n; ++i) {
+//                cout << person->m_selfAdaptionList[i] << " ";
+//            }
+//            cout << endl;
+//            getchar();
 //        }
 //        getchar();
         offspringPopulations.clear();
@@ -76,6 +85,7 @@ Person getBestPersonFromPopulation(Population &population) {
     Person bestPerson;
     for (auto &person: population) {
         const float quality = person->getPrecalculateObjective();
+//        cout << "bestQuality vs quality: " << bestQuality << " " << quality << endl;
         if (quality < bestQuality) {
             bestQuality = quality;
             bestPerson = person;
@@ -93,18 +103,44 @@ void initializePopulation(Population &parentPopulations, int parentPopulationSiz
     }
 }
 
-Person generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize) {
+void EvolutionStrategy::refreshChanceTable(const Population &parentPopulations) {
+    m_chanceTableList.clear();
+    float totalObjective = 0.0f;
+    float maxObjective = 0.0f;
+    for(auto &parent: parentPopulations) {
+        float objective = parent->getPrecalculateObjective();
+        maxObjective = max(maxObjective, objective);
+    }
+    for(auto &parent: parentPopulations) {
+        float objective = parent->getPrecalculateObjective();
+        totalObjective += maxObjective - objective;
+    }
+    float endRange = 0.0f;
+    for(auto &parent: parentPopulations) {
+        float objective = parent->getPrecalculateObjective();
+        endRange += (maxObjective - objective)/totalObjective;
+        m_chanceTableList.emplace_back(endRange);
+    }
+}
+
+Person EvolutionStrategy::generateOffspringFromPopulation(const Population &parentPopulations, int selectParentSize) {
     // In page 7 "Recombination Operators" of http://www.cmap.polytechnique.fr/~nikolaus.hansen/es-overview-2015.pdf
     // Use intermediate recombination
     Population selectedParentPopulation;
     selectedParentPopulation.reserve(selectParentSize);
+    int chooseIdx;
     for (int i = 0; i < selectParentSize; ++i) {
-        // FIXME currently use random select parent
-        selectedParentPopulation.emplace_back(parentPopulations[Util::randomIntUniform(0, static_cast<int>(parentPopulations.size())-1)]);
+        float choose = Util::randomFloatUniform();
+        chooseIdx = lower_bound(m_chanceTableList.begin(), m_chanceTableList.end(), choose) - m_chanceTableList.begin();
+        if (chooseIdx >= m_chanceTableList.size()) {
+            chooseIdx = m_chanceTableList.size()-1;
+        }
+        selectedParentPopulation.emplace_back(parentPopulations[chooseIdx]);
     }
     const int roadAmount = parentPopulations[0]->m_n;
     Person offspring = make_shared<Encoding>(roadAmount);
-    offspring->averageOverAllParent(selectedParentPopulation);
+    offspring->weightVoteOverAllParent(selectedParentPopulation);
+    offspring->m_debug = chooseIdx;
     return offspring;
 }
 
@@ -128,21 +164,25 @@ void mutation(Person &offspring) {
         (*offspring)[i] = Util::clamp(
                 (*offspring)[i] + offspring->m_selfAdaptionList[i] * Util::randomNormal(),
                 .01f, 1.f);
-        (*offspring)[i] += offspring->m_selfAdaptionList[i] * Util::randomNormal();
-        (*offspring)[i] = Util::clamp((*offspring)[i], .01f, 1.f);
     }
 }
 
 Population survivorSelection(const Population &parentPopulations, const Population &offspringPopulations) {
     // (mu, lambda) selection
-    // TODO should assert parent population and offspring population
     std::vector<PersonQuality> personQualityList;
     personQualityList.reserve(offspringPopulations.size());
     for (const auto &offspringPopulation : offspringPopulations) {
         personQualityList.emplace_back(offspringPopulation->getPrecalculateObjective(), offspringPopulation);
     }
-    // assume lower is better
+    // (mu + lambda) selection - uncomment this to convert to (mu + lambda) selection
+    for (const auto &parentPopulation : parentPopulations) {
+        personQualityList.emplace_back(parentPopulation->getPrecalculateObjective(), parentPopulation);
+    }
     std::sort(personQualityList.begin(), personQualityList.end());
+//    for(auto i: personQualityList) {
+//        cout << i.first << " " << i.second->m_debug << endl;
+//    }
+//    getchar();
 
     Population newPopulation;
     newPopulation.reserve(parentPopulations.size());

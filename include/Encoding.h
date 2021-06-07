@@ -43,10 +43,17 @@ public:
 
     void averageOverAllParent(const std::vector<Person> &parentPopulation);
 
+    void weightVoteOverAllParent(const std::vector<Person> &parentPopulation);
+
+    void weightVoteWithRandomOverAllParent(const std::vector<Person> &parentPopulation);
+
     int m_n;
     std::vector<float> m_powerList;
     float m_precalculateObjective;
     std::vector<float> m_selfAdaptionList;
+
+    // This variable is for debug purpose
+    int m_debug = -1;
 
 private:
     bool m_dirtyFlag;

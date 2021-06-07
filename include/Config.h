@@ -22,9 +22,11 @@ public:
     std::string m_bicyclePowerPlanLocation;
     std::string m_statisticLocation;
     std::string m_encodingLocation;
+    std::string m_executionTimeLocation;
 
     int m_seed;
 
+    int m_iteration = 10000;
     float m_tauFactor = 1.0f;
     float m_tauPrimeFactor = 1.0f;
     float m_epsilonFactor = 1.0f;
