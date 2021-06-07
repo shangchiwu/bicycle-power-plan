@@ -124,16 +124,20 @@ void Encoding::averageOverAllParent(const std::vector<Person> &parentPopulation)
 void Encoding::weightVoteOverAllParent(const std::vector<Person> &parentPopulation) {
     int parentPopulationSize = static_cast<int>(parentPopulation.size());
     float totalObjective = 0.0f;
+    float maxObjective = 0.0f;
     std::vector<float> objectiveList;
-    // use inverse proportion because I assume lower objective indicate better gene
     for(auto &parent: parentPopulation) {
         float objective = parent->getPrecalculateObjective();
-        totalObjective += 1.f/objective;
+        maxObjective = max(maxObjective, objective);
+    }
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        totalObjective += maxObjective - objective;
     }
     float endRange = 0.0f;
     for(auto &parent: parentPopulation) {
         float objective = parent->getPrecalculateObjective();
-        endRange += 1.f/objective/totalObjective;
+        endRange += (maxObjective - objective)/totalObjective;
         objectiveList.emplace_back(endRange);
     }
     for (int i = 0; i < m_n; ++i) {
@@ -152,17 +156,21 @@ void Encoding::weightVoteWithRandomOverAllParent(const std::vector<Person> &pare
     // add random value to increase its randomness
     int parentPopulationSize = static_cast<int>(parentPopulation.size());
     float totalObjective = 0.0f;
+    float maxObjective = 0.0f;
     std::vector<float> objectiveList;
-    // use inverse proportion because I assume lower objective indicate better gene
     for(auto &parent: parentPopulation) {
         float objective = parent->getPrecalculateObjective();
-        totalObjective += 1.f/objective;
+        maxObjective = max(maxObjective, objective);
     }
-    totalObjective += 0.1f;
+    for(auto &parent: parentPopulation) {
+        float objective = parent->getPrecalculateObjective();
+        totalObjective += maxObjective - objective;
+    }
+    totalObjective += 20.0f;
     float endRange = 0.0f;
     for(auto &parent: parentPopulation) {
         float objective = parent->getPrecalculateObjective();
-        endRange += 1.f/objective/totalObjective;
+        endRange += (maxObjective - objective)/totalObjective;
         objectiveList.emplace_back(endRange);
     }
     for (int i = 0; i < m_n; ++i) {

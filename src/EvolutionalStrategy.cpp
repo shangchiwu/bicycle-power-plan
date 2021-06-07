@@ -106,14 +106,19 @@ void initializePopulation(Population &parentPopulations, int parentPopulationSiz
 void EvolutionStrategy::refreshChanceTable(const Population &parentPopulations) {
     m_chanceTableList.clear();
     float totalObjective = 0.0f;
+    float maxObjective = 0.0f;
     for(auto &parent: parentPopulations) {
         float objective = parent->getPrecalculateObjective();
-        totalObjective += 1.f/objective;
+        maxObjective = max(maxObjective, objective);
+    }
+    for(auto &parent: parentPopulations) {
+        float objective = parent->getPrecalculateObjective();
+        totalObjective += maxObjective - objective;
     }
     float endRange = 0.0f;
     for(auto &parent: parentPopulations) {
         float objective = parent->getPrecalculateObjective();
-        endRange += 1.f/objective/totalObjective;
+        endRange += (maxObjective - objective)/totalObjective;
         m_chanceTableList.emplace_back(endRange);
     }
 }
@@ -123,15 +128,19 @@ Person EvolutionStrategy::generateOffspringFromPopulation(const Population &pare
     // Use intermediate recombination
     Population selectedParentPopulation;
     selectedParentPopulation.reserve(selectParentSize);
-
+    int chooseIdx;
     for (int i = 0; i < selectParentSize; ++i) {
         float choose = Util::randomFloatUniform();
-        int choose_idx = lower_bound(m_chanceTableList.begin(), m_chanceTableList.end(), choose) - m_chanceTableList.begin();
-        selectedParentPopulation.emplace_back(parentPopulations[choose_idx]);
+        chooseIdx = lower_bound(m_chanceTableList.begin(), m_chanceTableList.end(), choose) - m_chanceTableList.begin();
+        if (chooseIdx >= m_chanceTableList.size()) {
+            chooseIdx = m_chanceTableList.size()-1;
+        }
+        selectedParentPopulation.emplace_back(parentPopulations[chooseIdx]);
     }
     const int roadAmount = parentPopulations[0]->m_n;
     Person offspring = make_shared<Encoding>(roadAmount);
     offspring->weightVoteOverAllParent(selectedParentPopulation);
+    offspring->m_debug = chooseIdx;
     return offspring;
 }
 
@@ -171,7 +180,7 @@ Population survivorSelection(const Population &parentPopulations, const Populati
     }
     std::sort(personQualityList.begin(), personQualityList.end());
 //    for(auto i: personQualityList) {
-//        cout << i.first << endl;
+//        cout << i.first << " " << i.second->m_debug << endl;
 //    }
 //    getchar();
 

@@ -52,6 +52,9 @@ public:
     float m_precalculateObjective;
     std::vector<float> m_selfAdaptionList;
 
+    // This variable is for debug purpose
+    int m_debug = -1;
+
 private:
     bool m_dirtyFlag;
 };

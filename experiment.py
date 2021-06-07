@@ -94,12 +94,12 @@ if __name__ == "__main__":
         basic_config_dict = {
             "bicyclePowerPlanLocation": os.path.join(EXPERIMENT_DATA_LOCATION, experiment_filename),
             "parentPopulationSize": 64,
-            "selectPopulationSize": 1,
+            "selectPopulationSize": 3,
             "offspringPopulationSize": 128,
             "iteration": 10000,
-            "tauFactor": 8.0,
-            "tauPrimeFactor": 8.0,
-            "epsilonFactor": 0.3
+            "tauFactor": 0.2,
+            "tauPrimeFactor": 0.2,
+            "epsilonFactor": 0.05
             # Optional config if you want to constraint the evaluation time
             # "constraint_evaluation_time": 1000,
             # Optional config if you want to constraint the computation time(in micro seconds)
