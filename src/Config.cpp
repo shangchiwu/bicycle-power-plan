@@ -35,6 +35,7 @@ bool Config::readConfig(const string &configFilePath) {
 
     m_instance->m_statisticLocation = config["statistic_filename"];
     m_instance->m_encodingLocation = config["output_encoding_filename"];
+    m_instance->m_executionTimeLocation = config["execution_time_filename"];
 
     m_instance->m_iteration = config["iteration"];
 

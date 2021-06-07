@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <EvolutionalStrategy.h>
 #include <Config.h>
@@ -103,6 +104,10 @@ int main(int argc, char **argv) {
     timer.stop();
     const double executionTime = (double) timer.getDuration() / 1e9f;
     cout << "[End] Execution time: " << executionTime << " seconds" << endl;
+
+    std::ofstream time_file(config->m_executionTimeLocation);
+    time_file << executionTime << std::endl;
+    time_file.close();
 
     // output result
 

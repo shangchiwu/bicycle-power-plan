@@ -22,6 +22,7 @@ public:
     std::string m_bicyclePowerPlanLocation;
     std::string m_statisticLocation;
     std::string m_encodingLocation;
+    std::string m_executionTimeLocation;
 
     int m_seed;
 

@@ -19,9 +19,9 @@ void EvolutionStrategy::initialize() {
 void EvolutionStrategy::statistic(const std::string &filepath) const {
     fstream fs;
     fs.open(filepath, std::ios::out);
-    fs << "Iteration, Evaluation time(ms), Execution time" << endl;
+    fs << "iteration,evaluation_value,execution_time" << endl;
     for(int i = 0; i < m_executionTimeList.size(); ++i) {
-        fs << i+1 << ", " << m_evaluationTimeList[i] << ", " << m_executionTimeList[i] << endl;
+        fs << i+1 << "," << m_evaluationTimeList[i] << "," << m_executionTimeList[i] << endl;
     }
     fs.close();
 }

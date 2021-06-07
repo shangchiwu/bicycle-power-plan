@@ -147,6 +147,7 @@ void Encoding::weightVoteOverAllParent(const std::vector<Person> &parentPopulati
             if(choose <= objectiveList[j]) {
                 m_powerList[i] = (*parentPopulation[j])[i];
                 m_selfAdaptionList[i] = parentPopulation[j]->m_selfAdaptionList[i];
+                break;
             }
         }
     }

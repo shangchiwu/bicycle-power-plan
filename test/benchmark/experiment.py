@@ -5,13 +5,13 @@ import random
 import json
 import time
 
-PROGRAM_LOCATION = 'build/debug/BicyclePowerPlan.exe'
-EXPERIMENT_DATA_LOCATION = "./datasets/"
-PLAN_LIST = ['plan_merida_hard_50.json', 'plan_merida_hard_10.json'] # 'plan_river_easy.json',
+PROGRAM_LOCATION = '../../build-release/bin/BicyclePowerPlan.exe'
+EXPERIMENT_DATA_LOCATION = "../../datasets/"
+PLAN_LIST = ['plan_merida_hard_50.json', 'plan_merida_hard_10.json', 'plan_river_easy.json']
 
 TIMES = 40
 
-CPU_AMOUNT = 12
+CPU_AMOUNT = 16
 
 OUTPUT_DATA_PATH = "./notebook/data/"
 
@@ -67,9 +67,10 @@ def experiment_with_basic_config(experiment_path, basic_config_dict):
 
     for i in range(TIMES):
         config_dict = basic_config_dict.copy()
-        config_dict["statistic_filename"] = os.path.join(statistic_output_path, (str(i+1) + ".csv"))
+        config_dict["statistic_filename"] = os.path.join(statistic_output_path, "itertime_" + (str(i+1) + ".csv"))
         config_dict["output_encoding_filename"] = os.path.join(encoding_output_path, (str(i+1) + ".enc"))
         config_dict["seed"] = random.randint(0, 2147483647)
+        config_dict["execution_time_filename"] = os.path.join(statistic_output_path, "exectime_" + (str(i+1) + ".txt"))
         execute_program_with_json(config_dict)
 
 def setup_basic_config(experiment_setup_path, experiment_code, basic_config_dict):
